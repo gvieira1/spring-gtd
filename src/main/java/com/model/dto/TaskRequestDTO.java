@@ -1,0 +1,22 @@
+package com.model.dto;
+
+import java.time.LocalDate;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class TaskRequestDTO {
+	
+    @NotBlank
+    private String description;
+    
+    private Boolean priority;
+    private LocalDate deadline;
+    private Long estimatedTimeId;
+    private String subject;
+    private Boolean delegated;
+    private Long userId;
+    private Long categoryId;
+    private Long projectId;
+}

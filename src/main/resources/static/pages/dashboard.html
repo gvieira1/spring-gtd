@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTD for Students</title>
+    <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg  bg-nav">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">GTD For Students</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-3 mb-lg-0">
+        <li class="nav-item me-3">
+          <a class="nav-link hoverb" aria-current="page" data-bs-toggle="modal"
+						data-bs-target="#AddTarefa">Adicionar Tarefa</a>
+        </li>
+        <li class="nav-item me-3">
+          <a class="nav-link hoverb" aria-current="page" data-bs-toggle="modal"
+						data-bs-target="#AddProjeto">Criar Projeto</a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link hoverb" aria-current="page" href="./relatorio.html">Relatório semanal</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="No que vai trabalhar hoje?" aria-label="Search">
+        <button class="btn btn-outline-dark hoverb" type="submit">Filtre</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+	<div class="container-fluid justify-content-center mt-3 g-3 ">
+    <!-- Parte Superior -->
+    <div class="top-section">
+        <div class="row ">
+            <!-- Coluna 1: Como funciona? -->
+            <div class="col">
+                <div class="card text-center">
+                    <h4 class="card-header">Como funciona?</h4>
+                    <div class="card-body">
+                        <h6 class="card-text mt-1">Clique em Adicionar Tarefa para capturar suas ideias.</h6>
+                        <h6 class="card-text mt-1">Tem um tempinho? Organize seus afazeres clicando em classificar.</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coluna 2: Na caixa de entrada -->
+            <div class="col overflow-y-scroll">
+                <div class="card ">
+                    <h4 class="card-header">Na caixa de entrada</h4>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush " id="tarefasList">
+                            <!-- Lista dinâmica -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<br>
+
+    <!-- Parte Inferior -->
+    <div class="bottom-section ">
+        <div class="col-md-12">
+            <div class="row g-2">
+                <!-- Tabelas -->
+                <div class="col overflow-y-scroll">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr><th>Projetos</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="Projeto">
+                                <!-- lista dinâmica -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col overflow-y-scroll">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr><th>Quando puder</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="QuandoPuder">
+                                <!-- lista dinâmica -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col overflow-y-scroll">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr><th>Agendados</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="Agendado">
+                                <!-- lista dinâmica -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col overflow-y-scroll">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr><th>Aguardando resposta</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="AguardandoResposta">
+                                <!-- lista dinâmica -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col overflow-y-scroll">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr><th>Arquivo</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr id="Arquivo">
+                                <!-- lista dinâmica -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+	
+
+	<!-- Modal AddTarefa Inicio-->
+	<div class="modal fade text-center" id="AddTarefa" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5">O que precisa fazer?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body ">
+					<form id="tarefaFormInicio">
+
+						<div class="input-group mb-3">
+							<br>
+							<br> <input type="text" class="form-control" id="descricaoadd"
+								name="descricaoadd" required>
+							<button type="submit" class="btn btnadd">Adicionar</button>
+							<br>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal AddProjeto Inicio-->
+	<div class="modal fade text-center" id="AddProjeto" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5">Qual seu novo projeto?</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body ">
+					<form id="projetoForm">
+						<div class="input-group mb-3">
+							<br>
+							<br> <input type="text" class="form-control" id="descricaopro"
+								name="descricaopro" required>
+							<button type="submit" class="btn btnadd">Adicionar</button>
+							<br>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Modal para edição -->
+	<div class="modal fade" id="tarefasModal" tabindex="-1"
+		aria-labelledby="tarefasModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="tarefasModalLabel">Editar Tarefa</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="taskId" data-id=""></div>
+					<div class="p-4 border rounded-3 shadow-sm">
+						<form id="tarefaForm">
+							<input type="hidden" id="tarefaId">
+
+							<div class="mb-3">
+								<label for="descricaomodal" class="form-label">Descrição</label>
+								<input type="text" class="form-control" id="descricaomodal"
+									name="descricaomodal" required>
+							</div>
+
+							<div class="mb-3">
+								<label for="prioridademodal" class="form-label">É
+									prioridade?</label>
+								<div class="form-check form-switch">
+									<input class="form-check-input" type="checkbox"
+										id="formSwitch1"> <label class="form-check-label"
+										for="formSwitch1" id="switchLabel1">Não</label>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="prazomodal" class="form-label">Prazo</label> <input
+									type="date" class="form-control" id="prazomodal"
+									name="prazomodal">
+							</div>
+
+							<div class="mb-3">
+								<label for="tempoEstimadomodal" class="form-label">Tempo
+									Estimado</label> <select id="tempo_estimado" name="tempo_estimado"
+									class="form-select" required>
+									<!-- Opções -->
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label for="assuntomodal" class="form-label">Assunto</label> <input
+									type="text" class="form-control" id="assuntomodal"
+									name="assuntomodal" required>
+							</div>
+
+							<div class="mb-3">
+								<label for="delegadomodal" class="form-label">Pode ser
+									delegado?</label>
+								<div class="form-check form-switch">
+									<input class="form-check-input" type="checkbox"
+										id="formSwitch2"> <label class="form-check-label"
+										for="formSwitch2" id="switchLabel2">Não</label>
+								</div>
+							</div>
+
+							<div class="mb-3">
+								<label for="categoriamodal" class="form-label">Categoria</label>
+								<select class="form-select" id="categoriamodal"
+									name="categoriamodal" disabled>
+									<option value="1">Quando Puder</option>
+									<option value="2">Agendado</option>
+									<option value="3">Projeto</option>
+									<option value="4">Aguardando Resposta</option>
+									<option value="5">Arquivo</option>
+									<option value="6">Arquivo</option>
+								</select>
+							</div>
+							
+							<div class="d-flex justify-content-between mt-4">
+								<button type="button" class="btn btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteTask">Excluir tarefa</button>
+								<button type="submit" class="btn btnadd">Salvar Alterações</button>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para adição de subtask -->
+	<div class="modal fade" id="subTarefaModal" tabindex="-1"
+		aria-labelledby="subTarefaModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="subTarefaModalLabel">Ver Projeto</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="subtaskId" data-id=""></div>
+					<div class="p-4 border rounded-3 shadow-sm">
+						<h5>Sub tarefas</h5>
+						<ul class="list-group">
+							<li
+								class="list-group-item d-flex justify-content-between align-items-center">
+								Sub Tarefa 1 <input type="checkbox" >
+							</li>
+							<li
+								class="list-group-item d-flex justify-content-between align-items-center">
+								Sub Tarefa 2 <input type="checkbox" >
+							</li>
+							<li
+								class="list-group-item d-flex justify-content-between align-items-center">
+								Sub Tarefa <input type="checkbox" >
+							</li>
+							<li
+								class="list-group-item d-flex justify-content-between align-items-center">
+								Sub Tarefa <input type="checkbox">
+							</li>
+							<li
+								class="list-group-item d-flex justify-content-between align-items-center">
+								Sub Tarefa <input type="checkbox" >
+							</li>
+						</ul>
+
+						<div class="d-flex justify-content-between mt-4">
+							<button type="button" class="btn btn-outline-danger ms-2"
+								data-bs-toggle="modal" data-bs-target="#deleteModal"
+								id="deleteTask">Excluir Projeto</button>
+							<button type="submit" class="btn btnadd">Nova Sub Tarefa</button>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Feito -->
+	<div class="modal fade" id="feitoModal" tabindex="-1" aria-labelledby="feitoModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="feitoModalLabel">Finalizar tarefa?</h1>
+	      </div>
+	      <form id="feitoModalForm">
+	        <div class="modal-footer d-flex justify-content-between mt-4">
+	          <button type="button" class="btn btn-outline-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
+	          <button type="submit" class="btn btnadd">Marcar como feito</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+	
+	    <!-- Modal Delete -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h1 class="modal-title fs-5" id="feitoModalLabel">Excluir tarefa?</h1>
+	      </div>
+	      <form id="deleteModalForm">
+	        <div class="modal-footer d-flex justify-content-between mt-4">
+	          <button type="button" class="btn btn-outline-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
+	          <button type="submit" class="btn btnadd">Excluir permanentemente</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    
+    <script type="module" src="../scripts/helpers.js"></script>
+    <script type="module" src="../scripts/api/temposEstimados.js"></script>
+    <script type="module" src="../scripts/api/tarefas.js"></script>
+    <script type="module" src="../scripts/api/categorias.js"></script>
+    <script type="module" src="../scripts/api/projetos.js"></script>
+    <script type="module" src="../scripts/projetoForm.js"></script>
+    <script type="module" src="../scripts/modal.js"></script>
+    <script type="module" src="../scripts/tarefaForm.js"></script>
+    <script type="module" src="../scripts/main.js"></script>
+</body>
+</html>
+
+
