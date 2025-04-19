@@ -2,12 +2,19 @@ package com.model.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
+import com.model.dto.ProjectRequestDTO;
+import com.model.dto.ProjectResponseDTO;
+import com.model.dto.TaskRequestDTO;
+import com.model.dto.TaskResponseDTO;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.repository.ProjectRepository;
@@ -18,45 +25,63 @@ public class ProjectService {
 
 	private final ProjectRepository projectRepository;
 	private final TaskRepository taskRepository;
+	private final ModelMapper modelMapper;
 
-	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository) {
+	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, ModelMapper modelMapper) {
 		this.projectRepository = projectRepository;
 		this.taskRepository = taskRepository;
+		this.modelMapper = modelMapper;
 	}
 
 
-	public Page<Project> getAllProjects(Pageable pageable){
-		return projectRepository.findAll(pageable);
+	public Page<ProjectResponseDTO> getAllProjects(Pageable pageable){
+		return projectRepository.findAll(pageable).map(this::toDTO);
 	}
 	
-	public Page<Task> getTasksByProject(Long id, Pageable pageable) {
-	    return taskRepository.findByProjectId(id, pageable);
+	
+	public Page<TaskResponseDTO> getTasksByProject(Long id, Pageable pageable) {
+		
+	    Page<Task> taskPage = taskRepository.findByProjectId(id, pageable);
+
+	    List<TaskResponseDTO> taskResponseDTOs = taskPage.getContent().stream()
+	        .map(task -> modelMapper.map(task, TaskResponseDTO.class)) 
+	        .collect(Collectors.toList());
+	    
+	    return new PageImpl<>(taskResponseDTOs, pageable, taskPage.getTotalElements());
 	}
 	
-	public Project getProjectById(Long id) {
-	    return projectRepository.findById(id)
+	public ProjectResponseDTO getProjectById(Long id) {
+	    Project project =  projectRepository.findById(id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
+	    
+	    return toDTO(project);
 	}
 	
-	public Project createProject(Project project) {
-	    return projectRepository.save(project);
+	public ProjectResponseDTO createProject(ProjectRequestDTO projectDTO) {
+		Project project = toEntity(projectDTO);
+		Project savedProject = projectRepository.save(project);
+	    return toDTO(savedProject);
 	}
 	
-	public Task addTaskToProject(Long id, Task task) {
+	public TaskResponseDTO addTaskToProject(Long id, TaskRequestDTO taskDTO) {
 	    Project project = projectRepository.findById(id)
 	    		.orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
 	    
+	    Task task = modelMapper.map(taskDTO, Task.class);
 	    task.setProject(project);
-	    return taskRepository.save(task);
+		Task saved = taskRepository.save(task);
+
+		return modelMapper.map(saved, TaskResponseDTO.class);
 	}
 	
-	public Project updateProject(Long id, Project updatedProject) {
+	public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO updatedProjectDTO) {
 	    Project existing = projectRepository.findById(id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
 	    
-	    existing.setDescription(updatedProject.getDescription());
+	    existing.setDescription(updatedProjectDTO.getDescription());
 	    updateProjectStatus(existing);
-	    return projectRepository.save(existing);
+	    Project savedProject = projectRepository.save(existing);
+	    return toDTO(savedProject);
 	}
 	
 	public void deleteProject(Long id) {		
@@ -76,5 +101,13 @@ public class ProjectService {
 	        projectRepository.save(project);
 	    }
 	}
+	
+	public Project toEntity(ProjectRequestDTO dto) {
+        return modelMapper.map(dto, Project.class);
+    }
+
+    public ProjectResponseDTO toDTO(Project project) {
+        return modelMapper.map(project, ProjectResponseDTO.class);
+    }
 
 }

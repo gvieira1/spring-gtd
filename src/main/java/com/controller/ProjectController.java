@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.entity.Project;
-import com.model.entity.Task;
+import com.model.dto.ProjectRequestDTO;
+import com.model.dto.ProjectResponseDTO;
+import com.model.dto.TaskRequestDTO;
+import com.model.dto.TaskResponseDTO;
 import com.model.service.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,38 +34,38 @@ public class ProjectController {
 
 	@Operation(summary = "Get all projects")
 	@GetMapping
-	public ResponseEntity<Page<Project>> GetAllProjects(Pageable pageable) {
+	public ResponseEntity<Page<ProjectResponseDTO>> GetAllProjects(Pageable pageable) {
 		return ResponseEntity.ok(projectService.getAllProjects(pageable));
 	}
 	
 	@Operation(summary = "List all tasks by their Project")
 	@GetMapping("/{id}/tasks")
-	public ResponseEntity<Page<Task>> getTasksByProject(@PathVariable Long id, Pageable pageable) {
+	public ResponseEntity<Page<TaskResponseDTO>> getTasksByProject(@PathVariable Long id, Pageable pageable) {
 		return ResponseEntity.ok(projectService.getTasksByProject(id, pageable));
 	}
 
 	@Operation(summary = "Get the project by its ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+	public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
 		return ResponseEntity.ok(projectService.getProjectById(id));
 	}
 	
 	@Operation(summary = "Create a new Project")
 	@PostMapping
-	public ResponseEntity<Project> createProject(@RequestBody Project project) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(project));
+	public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectDTO) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectDTO));
 	}
 	
 	@Operation(summary = "Add Task to a Project")
 	@PostMapping("/{id}/tasks")
-	public ResponseEntity<Task> addTaskToProject(@PathVariable Long id, @RequestBody Task task) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.addTaskToProject(id, task));
+	public ResponseEntity<TaskResponseDTO> addTaskToProject(@PathVariable Long id, @RequestBody TaskRequestDTO taskDTO) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.addTaskToProject(id, taskDTO));
 	}
 
 	@Operation(summary = "Update a Project")
 	@PutMapping("/{id}")
-	public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project updatedProject) {
-		return ResponseEntity.ok(projectService.updateProject(id, updatedProject));
+	public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO updatedProjectDTO) {
+		return ResponseEntity.ok(projectService.updateProject(id, updatedProjectDTO));
 	}
 	
 	@Operation(summary = "Delete a project with its tasks")

@@ -1,7 +1,5 @@
 package com.controller;
 
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.entity.Task;
+import com.model.dto.GroupedTasksResponseDTO;
+import com.model.dto.TaskRequestDTO;
+import com.model.dto.TaskResponseDTO;
 import com.model.service.TaskService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,20 +39,20 @@ public class TaskController {
 
 	@Operation(summary = "Get tasks accepting a filter")
     @GetMapping
-	public ResponseEntity<Page<Task>> getTasks(
+	public ResponseEntity<Page<TaskResponseDTO>> getTasks(
 			@RequestParam(value = "withoutProject", required = false) Boolean withoutProject, Pageable pageable) {
 		return ResponseEntity.ok(taskService.getFilteredTasks(withoutProject, pageable));
 	}
     
     @Operation(summary = "Get task by its ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable Long id) {
 		return ResponseEntity.ok(taskService.getTaskById(id));
 	}
 
 	@Operation(summary = "Get tasks order by category")
 	@GetMapping("/grouped/{id}")
-	public ResponseEntity<Map<String, Object>> getGroupedTasks(@PathVariable Long userId,
+	public ResponseEntity<GroupedTasksResponseDTO> getGroupedTasks(@PathVariable Long userId,
 			@PageableDefault(size = 10, page = 0, sort = "category.name") Pageable pageable) {
 		
 		return ResponseEntity.ok(taskService.getTasksGroupedByCategory(userId, pageable));
@@ -61,24 +61,24 @@ public class TaskController {
 	@Operation(summary = "Create a task just with description and done")
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Task> createTaskWithDescription(@Valid @RequestBody Task task) { 
-		Task savedTask = taskService.save(task);
+	public ResponseEntity<TaskResponseDTO> createTaskWithDescription(@Valid @RequestBody TaskRequestDTO dto) { 
+		TaskResponseDTO savedTask = taskService.save(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
 	}
 
 	@Operation(summary = "Update a task")
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody Task updatedTask) {
-		return ResponseEntity.ok(taskService.updateTask(id, updatedTask));      
+    public ResponseEntity<TaskResponseDTO> updateTask(@PathVariable Long id, @Valid @RequestBody TaskRequestDTO updatedDTO) {
+		return ResponseEntity.ok(taskService.updateTask(id, updatedDTO));      
     }
 	
 	@PatchMapping("/{id}/remove-project")
-	public ResponseEntity<Task> removeProject(@PathVariable Long id) {
+	public ResponseEntity<TaskResponseDTO> removeProject(@PathVariable Long id) {
 	    return ResponseEntity.ok(taskService.removeProjectFromTask(id));
 	}
 	
 	@PatchMapping("/{id}/complete")
-	public ResponseEntity<Task> markTaskAsComplete(@PathVariable Long id) {
+	public ResponseEntity<TaskResponseDTO> markTaskAsComplete(@PathVariable Long id) {
 	    return ResponseEntity.ok(taskService.markAsCompleted(id));
 	}
 

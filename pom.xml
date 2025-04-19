@@ -14,7 +14,7 @@
     <groupId>com.gtd</groupId>
     <artifactId>gtd-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>  <!-- Alterado de WAR para JAR -->
+    <packaging>jar</packaging>  
 
     <name>gtd-spring</name>
     <description>Spring Boot GTD Project</description>
@@ -52,13 +52,13 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Boot Starter Logging (já incluído no Starter Web, mas pode ser mantido) -->
+        <!-- Spring Boot Starter Logging -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
 
-        <!-- SLF4J API (já incluído no Spring Boot Logging) -->
+        <!-- SLF4J API  -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -91,6 +91,13 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 		
     </dependencies>
