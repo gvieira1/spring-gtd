@@ -11,26 +11,28 @@ import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
 import com.model.dto.GroupedTasksResponseDTO;
+import com.model.dto.SimpleCategoryDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.Project;
 import com.model.entity.Task;
+import com.repository.CategoryRepository;
 import com.repository.TaskRepository;
 
 @Service
 public class TaskService {
 
 	private final TaskRepository taskRepository;
-	private final CategoryEntity category;
 	private final ProjectService projectService;
 	private final ModelMapper modelMapper;
+	private final CategoryRepository categoryRepository;
 	
-	public TaskService(TaskRepository taskRepository, CategoryEntity category, ProjectService projectService, ModelMapper modelMapper) {
+	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository) {
 		this.taskRepository = taskRepository;
-		this.category = category;
 		this.projectService = projectService;
 		this.modelMapper = modelMapper;
+		this.categoryRepository = categoryRepository;
 	}
 	
 
@@ -42,7 +44,10 @@ public class TaskService {
 	}
 
 	public TaskResponseDTO save(TaskRequestDTO dto) {
+		CategoryEntity category = new CategoryEntity();
+		category.setId(6L);
 		Task task = toEntity(dto);
+		task.setCategory(category);
 		Task saved = taskRepository.save(task);
 
 		if (saved.getProject() != null) {
@@ -93,7 +98,7 @@ public class TaskService {
 	}
 
 	private void defineCategory(Task task) {
-		category.setId(5L);
+		CategoryEntity category = new CategoryEntity();
 
 		if (Boolean.TRUE.equals(task.getDelegated())) {
 			category.setId(4L);
@@ -101,6 +106,8 @@ public class TaskService {
 			category.setId(1L);
 		} else if (task.getDeadline() != null) {
 			category.setId(2L);
+		}else {
+			category.setId(5L);
 		}
 
 		task.setCategory(category);
@@ -171,9 +178,17 @@ public class TaskService {
 		return toDTO(saved);
 	}
 	
-    public TaskResponseDTO toDTO(Task task) {
-        return modelMapper.map(task, TaskResponseDTO.class);
-    }
+	public TaskResponseDTO toDTO(Task task) {
+	    TaskResponseDTO responseDTO = modelMapper.map(task, TaskResponseDTO.class);
+	    CategoryEntity category = categoryRepository.findById(task.getCategory().getId())
+	                                          .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+	    SimpleCategoryDTO categoryDTO = responseDTO.getCategory();
+	    categoryDTO.setName(category.getName());  
+
+	    return responseDTO;
+	}
+
 
     public Task toEntity(TaskRequestDTO taskRequestDTO) {
         return modelMapper.map(taskRequestDTO, Task.class);

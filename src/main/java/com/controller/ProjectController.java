@@ -57,9 +57,15 @@ public class ProjectController {
 	}
 	
 	@Operation(summary = "Add Task to a Project")
-	@PostMapping("/{id}/tasks")
-	public ResponseEntity<TaskResponseDTO> addTaskToProject(@PathVariable Long id, @RequestBody TaskRequestDTO taskDTO) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.addTaskToProject(id, taskDTO));
+	@PostMapping("/{idProject}/tasks")
+	public ResponseEntity<TaskResponseDTO> addTaskToProject(@PathVariable Long idProject, @RequestBody TaskRequestDTO taskDTO) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.addTaskToProject(idProject, taskDTO));
+	}
+	
+	@Operation(summary = "Add an existing Task to a Project")
+	@PutMapping("/{projectId}/tasks/{taskId}")
+	public ResponseEntity<TaskResponseDTO> addExistingTaskToProject(@PathVariable Long projectId, @PathVariable Long taskId) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.addExistingTaskToProject(projectId, taskId));
 	}
 
 	@Operation(summary = "Update a Project")

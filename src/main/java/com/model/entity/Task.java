@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -27,6 +28,7 @@ public class Task {
 
 	private Boolean priority;
 
+	@FutureOrPresent
 	private LocalDate deadline;
 
 	@ManyToOne(fetch = FetchType.LAZY)

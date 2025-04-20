@@ -41,6 +41,8 @@ public class ModelMapperConfig {
                 
                 using(ctx -> new SimpleUserDTO()).map(source.getUserId(), destination.getUser().getId());
                 using(ctx -> new SimpleCategoryDTO()).map(source.getCategoryId(), destination.getCategory().getId());
+                
+                
                 using(ctx -> new SimpleProjectDTO()).map(source.getProjectId(), destination.getProject().getId());
             }
         });
@@ -67,6 +69,7 @@ public class ModelMapperConfig {
                 map().setId(source.getId());
                 map().setDescription(source.getDescription());
                 map().setDone(source.getDone());
+
 
                 // Task → TaskSummaryDTO (lista)
                 using(ctx -> {

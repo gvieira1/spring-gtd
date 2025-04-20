@@ -51,14 +51,14 @@ public class TaskController {
 	}
 
 	@Operation(summary = "Get tasks order by category")
-	@GetMapping("/grouped/{id}")
+	@GetMapping("/grouped/{userId}")
 	public ResponseEntity<GroupedTasksResponseDTO> getGroupedTasks(@PathVariable Long userId,
 			@PageableDefault(size = 10, page = 0, sort = "category.name") Pageable pageable) {
 		
 		return ResponseEntity.ok(taskService.getTasksGroupedByCategory(userId, pageable));
 	}
 
-	@Operation(summary = "Create a task just with description and done")
+	@Operation(summary = "Create a task just with description")
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<TaskResponseDTO> createTaskWithDescription(@Valid @RequestBody TaskRequestDTO dto) { 

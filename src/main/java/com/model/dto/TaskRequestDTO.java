@@ -2,6 +2,7 @@ package com.model.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -12,6 +13,8 @@ public class TaskRequestDTO {
     private String description;
     
     private Boolean priority;
+    
+    @FutureOrPresent
     private LocalDate deadline;
     private Long estimatedTimeId;
     private String subject;
