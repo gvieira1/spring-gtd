@@ -49,11 +49,11 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException exception) {
 		Map<String, String> errorResponse = new HashMap<>();
 		errorResponse.put("error", exception.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 	}
 	
 	@ExceptionHandler(Exception.class)

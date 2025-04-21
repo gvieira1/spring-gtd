@@ -1,5 +1,6 @@
 package com.model.service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -11,10 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
-import com.exception.UserNotFoundException;
 import com.model.dto.ProjectRequestDTO;
 import com.model.dto.ProjectResponseDTO;
-import com.model.dto.SimpleUserDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
@@ -23,7 +22,6 @@ import com.model.entity.Task;
 import com.model.entity.User;
 import com.repository.ProjectRepository;
 import com.repository.TaskRepository;
-import com.repository.UserRepository;
 
 @Service
 public class ProjectService {
@@ -31,24 +29,25 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final TaskRepository taskRepository;
 	private final ModelMapper modelMapper;
-	private final UserRepository userRepository;
+	private final UserService userService;
 
-	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, ModelMapper modelMapper, UserRepository userRepository) {
+	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, ModelMapper modelMapper, UserService userService) {
 		this.projectRepository = projectRepository;
 		this.taskRepository = taskRepository;
 		this.modelMapper = modelMapper;
-		this.userRepository = userRepository;
+		this.userService = userService;
 	}
 
 
 	public Page<ProjectResponseDTO> getAllProjects(Pageable pageable){
-		return projectRepository.findAll(pageable).map(this::toDTO);
+		User user = userService.getAuthenticatedUser();
+		return projectRepository.findByUserId(user.getId(), pageable).map(this::toDTO);
 	}
 	
 	
-	public Page<TaskResponseDTO> getTasksByProject(Long id, Pageable pageable) {
-		
-	    Page<Task> taskPage = taskRepository.findByProjectId(id, pageable);
+	public Page<TaskResponseDTO> getTasksByProject(Long projectId, Pageable pageable) {
+		User user = userService.getAuthenticatedUser();	
+	    Page<Task> taskPage = taskRepository.findByUserIdAndProjectId(user.getId(), projectId, pageable);
 
 	    List<TaskResponseDTO> taskResponseDTOs = taskPage.getContent().stream()
 	        .map(task -> modelMapper.map(task, TaskResponseDTO.class)) 
@@ -58,37 +57,45 @@ public class ProjectService {
 	}
 	
 	public ProjectResponseDTO getProjectById(Long id) {
-	    Project project =  projectRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+	    Project project =  projectRepository.findByUserIdAndId(user.getId(), id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
 	    
 	    return toDTO(project);
 	}
 	
-	public ProjectResponseDTO createProject(ProjectRequestDTO projectDTO) {
+	public ProjectResponseDTO createProject(ProjectRequestDTO projectDTO, Principal principal) {
+		
+		User user = userService.getAuthenticatedUser();
+		
 		Project project = toEntity(projectDTO);
+		project.setUser(user);
 		project.setDone(false);
 		Project savedProject = projectRepository.save(project);
 	    return toDTO(savedProject);
 	}
 	
 	public TaskResponseDTO addTaskToProject(Long idProject, TaskRequestDTO taskDTO) {
-	    Project project = projectRepository.findById(idProject)
+		User user = userService.getAuthenticatedUser();	
+	    Project project =  projectRepository.findByUserIdAndId(user.getId(), idProject)
 	    		.orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + idProject));
 	    CategoryEntity category = new CategoryEntity();
 	    category.setId(3L);
 	    Task task = modelMapper.map(taskDTO, Task.class);
 	    task.setProject(project);
 	    task.setCategory(category);
+	    task.setUser(user);
 		Task saved = taskRepository.save(task);
 
 		return modelMapper.map(saved, TaskResponseDTO.class);
 	}
 	
 	public TaskResponseDTO addExistingTaskToProject(Long projectId, Long taskId) {
-		Project project = projectRepository.findById(projectId)
+		User user = userService.getAuthenticatedUser();	
+	    Project project =  projectRepository.findByUserIdAndId(user.getId(), projectId)
 	    		.orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + projectId));
 		
-		Task existingTask = taskRepository.findById(taskId)
+		Task existingTask = taskRepository.findByUserIdAndId(user.getId(),taskId)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + taskId));
 		
 		existingTask.setProject(project);
@@ -98,7 +105,8 @@ public class ProjectService {
 	}
 	
 	public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO updatedProjectDTO) {
-	    Project existing = projectRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+	    Project existing =  projectRepository.findByUserIdAndId(user.getId(), id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
 	    
 	    existing.setDescription(updatedProjectDTO.getDescription());
@@ -108,7 +116,8 @@ public class ProjectService {
 	}
 	
 	public void deleteProject(Long id) {		
-		Project existing = projectRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+	    Project existing =  projectRepository.findByUserIdAndId(user.getId(), id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + id));
 	    projectRepository.delete(existing);
 	}
@@ -130,14 +139,7 @@ public class ProjectService {
     }
 
     public ProjectResponseDTO toDTO(Project project) {
-    	ProjectResponseDTO responseDTO =  modelMapper.map(project, ProjectResponseDTO.class);
-    	User user = userRepository.findById(project.getUser().getId())
-    			.orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
-    	
-    	SimpleUserDTO userDTO = responseDTO.getUser();
-    	userDTO.setName(user.getName());
-    	
-    	return responseDTO;
+    	return  modelMapper.map(project, ProjectResponseDTO.class);
     }
 
 }

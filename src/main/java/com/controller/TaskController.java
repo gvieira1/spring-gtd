@@ -1,5 +1,6 @@
 package com.controller;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,7 +41,7 @@ public class TaskController {
 	@Operation(summary = "Get tasks accepting a filter")
     @GetMapping
 	public ResponseEntity<Page<TaskResponseDTO>> getTasks(
-			@RequestParam(value = "withoutProject", required = false) Boolean withoutProject, Pageable pageable) {
+			@RequestParam(value = "withoutProjects", required = false) Boolean withoutProject, Pageable pageable) {
 		return ResponseEntity.ok(taskService.getFilteredTasks(withoutProject, pageable));
 	}
     
@@ -51,11 +52,10 @@ public class TaskController {
 	}
 
 	@Operation(summary = "Get tasks order by category")
-	@GetMapping("/grouped/{userId}")
-	public ResponseEntity<GroupedTasksResponseDTO> getGroupedTasks(@PathVariable Long userId,
-			@PageableDefault(size = 10, page = 0, sort = "category.name") Pageable pageable) {
+	@GetMapping("/grouped")
+	public ResponseEntity<GroupedTasksResponseDTO> getGroupedTasks(@PageableDefault(size = 10, page = 0, sort = "category.name") Pageable pageable) {
 		
-		return ResponseEntity.ok(taskService.getTasksGroupedByCategory(userId, pageable));
+		return ResponseEntity.ok(taskService.getTasksGroupedByCategory(pageable));
 	}
 
 	@Operation(summary = "Create a task just with description")

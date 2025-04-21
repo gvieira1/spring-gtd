@@ -1,4 +1,6 @@
 package com.controller;
+import java.security.Principal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,8 +54,8 @@ public class ProjectController {
 	
 	@Operation(summary = "Create a new Project")
 	@PostMapping
-	public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectDTO) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectDTO));
+	public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectDTO, Principal principal) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(projectDTO, principal));
 	}
 	
 	@Operation(summary = "Add Task to a Project")

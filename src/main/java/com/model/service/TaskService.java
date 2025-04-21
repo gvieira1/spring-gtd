@@ -17,9 +17,9 @@ import com.model.dto.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.Project;
 import com.model.entity.Task;
+import com.model.entity.User;
 import com.repository.CategoryRepository;
 import com.repository.TaskRepository;
-
 @Service
 public class TaskService {
 
@@ -27,27 +27,35 @@ public class TaskService {
 	private final ProjectService projectService;
 	private final ModelMapper modelMapper;
 	private final CategoryRepository categoryRepository;
+	private final UserService userService;
 	
-	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository) {
+	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository, UserService userService) {
 		this.taskRepository = taskRepository;
 		this.projectService = projectService;
 		this.modelMapper = modelMapper;
 		this.categoryRepository = categoryRepository;
+		this.userService = userService;
 	}
 	
 
 	public Page<TaskResponseDTO> getFilteredTasks(Boolean withoutProject, Pageable pageable) {
-		Page<Task> tasks = Boolean.TRUE.equals(withoutProject) ? taskRepository.findByProjectIsNull(pageable)
-				: taskRepository.findAll(pageable);
+		User user = userService.getAuthenticatedUser();	
+		Page<Task> tasks = Boolean.TRUE.equals(withoutProject) ? taskRepository.findByUserIdAndProjectIsNull(user.getId(), pageable)
+				: taskRepository.findByUserId(user.getId(), pageable);
 
 		return tasks.map(this::toDTO);
 	}
 
 	public TaskResponseDTO save(TaskRequestDTO dto) {
+		
 		CategoryEntity category = new CategoryEntity();
 		category.setId(6L);
+	
+		User user = userService.getAuthenticatedUser();	
+
 		Task task = toEntity(dto);
 		task.setCategory(category);
+		task.setUser(user);
 		Task saved = taskRepository.save(task);
 
 		if (saved.getProject() != null) {
@@ -58,13 +66,15 @@ public class TaskService {
 	}
 
 	public TaskResponseDTO getTaskById(Long id) {
-		Task task = taskRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+		Task task = taskRepository.findByUserIdAndId(user.getId(), id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 		return toDTO(task);
 	}
 
 	public TaskResponseDTO updateTask(Long id, TaskRequestDTO updatedDTO) {
-		Task existingTask = taskRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+		Task existingTask = taskRepository.findByUserIdAndId(user.getId(), id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
 
 		if (updatedDTO.getDescription() != null) {
@@ -114,7 +124,8 @@ public class TaskService {
 	}
 
 	public void deleteTask(Long id) {
-		Task task = taskRepository.findById(id)
+		User user = userService.getAuthenticatedUser();	
+		Task task = taskRepository.findByUserIdAndId(user.getId(), id)
 				.orElseThrow(() -> new ResourceNotFoundException("task não encontrada: " + id));
 		Project project = task.getProject();
 
@@ -125,8 +136,9 @@ public class TaskService {
 		}
 	}
 
-	public GroupedTasksResponseDTO getTasksGroupedByCategory(Long userId, Pageable pageable) {
-	    Page<Task> tasksPage = taskRepository.findByUserIdOrderByCategoryName(userId, pageable);
+	public GroupedTasksResponseDTO getTasksGroupedByCategory(Pageable pageable) {
+		User user = userService.getAuthenticatedUser();	
+	    Page<Task> tasksPage = taskRepository.findByUserIdOrderByCategoryName(user.getId(), pageable);
 
 	    Map<String, List<TaskResponseDTO>> groupedTasks = tasksPage
 	    															.getContent()
@@ -146,7 +158,8 @@ public class TaskService {
 
 	
 	public TaskResponseDTO removeProjectFromTask(Long taskId) {
-	    Task task = taskRepository.findById(taskId)
+		User user = userService.getAuthenticatedUser();	
+		Task task = taskRepository.findByUserIdAndId(user.getId(), taskId)
 				.orElseThrow(() -> new ResourceNotFoundException("task não encontrada: " + taskId));
 
 	    Project previousProject = task.getProject();
@@ -161,7 +174,8 @@ public class TaskService {
 	}
 
 	public TaskResponseDTO markAsCompleted(Long taskId) {
-		Task task = taskRepository.findById(taskId)
+		User user = userService.getAuthenticatedUser();	
+		Task task = taskRepository.findByUserIdAndId(user.getId(), taskId)
 				.orElseThrow(() -> new ResourceNotFoundException("task não encontrada: " + taskId));
 
 		if (Boolean.TRUE.equals(task.getDone())) {
