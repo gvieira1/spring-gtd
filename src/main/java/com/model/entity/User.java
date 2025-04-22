@@ -31,6 +31,9 @@ public class User implements UserDetails{
 
     @Column(nullable = false)
     private String password;
+    
+    @Column(name="moodle_user_id", unique = true)
+    private Long moodleUserId;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

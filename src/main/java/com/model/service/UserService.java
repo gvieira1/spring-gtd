@@ -38,6 +38,11 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
+	public void saveMoodleUser(User user, Long moodleId) {
+		user.setMoodleUserId(moodleId);
+		userRepository.save(user);
+	}
+	
 	public User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof User user)) {
