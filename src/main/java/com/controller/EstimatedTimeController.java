@@ -14,7 +14,7 @@ import com.repository.EstimatedTimeRepository;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/estimated-times")
+@RequestMapping("api/estimated-times")
 public class EstimatedTimeController {
 
     @Autowired

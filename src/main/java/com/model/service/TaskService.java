@@ -53,6 +53,14 @@ public class TaskService {
 		return tasks.map(this::toDTO);
 	}
 
+	public List<TaskResponseDTO> getTasksByUserId(){
+		User user = userService.getAuthenticatedUser();	
+		List<Task> tasks = taskRepository.findByUserId(user.getId());
+		return tasks.stream()
+                .map(task -> modelMapper.map(task, TaskResponseDTO.class))
+                .collect(Collectors.toList());
+	}
+	
 	public TaskResponseDTO save(TaskRequestDTO dto) {
 		
 		CategoryEntity category = new CategoryEntity();

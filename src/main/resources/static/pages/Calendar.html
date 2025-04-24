@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste - Toast UI Calendar com jQuery</title>
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  <style>
+    #calendar {
+      height: 800px;
+      margin: 20px auto;
+      max-width: 1000px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2 style="text-align: center;">Calendário de Tarefas</h2>
+  <div id="calendar"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+
+  <script>
+    const calendar = new tui.Calendar('#calendar', {
+      usageStatistics: false,
+      language: 'pt',
+      defaultView: 'month',
+      taskView: false,
+      scheduleView: true,
+      useDetailPopup: true,
+      useCreationPopup: false,
+      template: {
+        allday: function(schedule) {
+          return schedule.title;
+        },
+        time: function(schedule) {
+          return schedule.title;
+        }
+      }
+    });
+
+    $(document).ready(function () {
+      $.ajax({
+        url: '/api/calendar',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+          console.log("Dados recebidos:", data);
+          calendar.createEvents(data);
+        },
+        error: function (xhr, status, error) {
+          console.error("Erro ao carregar eventos:", error);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
