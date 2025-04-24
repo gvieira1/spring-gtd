@@ -9,6 +9,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.model.dto.EstimatedTimeDTO;
 import com.model.dto.ProjectRequestDTO;
 import com.model.dto.ProjectResponseDTO;
 import com.model.dto.SimpleCategoryDTO;
@@ -25,7 +26,7 @@ import com.model.entity.User;
 public class ModelMapperConfig {
 
     @Bean
-    public ModelMapper modelMapper() {
+    ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -39,6 +40,7 @@ public class ModelMapperConfig {
                 map(source.getSubject(), destination.getSubject());
                 map(source.getDelegated(), destination.getDelegated());
                 
+                using(ctx -> new EstimatedTimeDTO()).map(source.getCategoryId(), destination.getEstimatedTime());
                 using(ctx -> new SimpleUserDTO()).map(source.getUserId(), destination.getUser().getId());
                 using(ctx -> new SimpleCategoryDTO()).map(source.getCategoryId(), destination.getCategory().getId());
                 

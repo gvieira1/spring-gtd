@@ -13,6 +13,7 @@ public class TaskResponseDTO {
     private Boolean done;
     private Boolean delegated;
 
+    private EstimatedTimeDTO estimatedTime;
     private SimpleUserDTO user;
     private SimpleCategoryDTO category;
     private SimpleProjectDTO project;

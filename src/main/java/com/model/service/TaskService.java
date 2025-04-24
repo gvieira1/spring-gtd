@@ -13,15 +13,18 @@ import org.springframework.stereotype.Service;
 import com.exception.ResourceNotFoundException;
 import com.model.dto.ActivityStatusDTO;
 import com.model.dto.CourseDTO;
+import com.model.dto.EstimatedTimeDTO;
 import com.model.dto.GroupedTasksResponseDTO;
 import com.model.dto.SimpleCategoryDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
+import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.model.entity.User;
 import com.repository.CategoryRepository;
+import com.repository.EstimatedTimeRepository;
 import com.repository.TaskRepository;
 @Service
 public class TaskService {
@@ -31,12 +34,14 @@ public class TaskService {
 	private final ModelMapper modelMapper;
 	private final CategoryRepository categoryRepository;
 	private final UserService userService;
+	private final EstimatedTimeRepository estTimeRepository;
 	
-	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository, UserService userService) {
+	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository,EstimatedTimeRepository estTimeRepository, UserService userService) {
 		this.taskRepository = taskRepository;
 		this.projectService = projectService;
 		this.modelMapper = modelMapper;
 		this.categoryRepository = categoryRepository;
+		this.estTimeRepository = estTimeRepository;
 		this.userService = userService;
 	}
 
@@ -52,6 +57,9 @@ public class TaskService {
 		
 		CategoryEntity category = new CategoryEntity();
 		category.setId(6L);
+		
+		EstimatedTime estTime = new EstimatedTime();
+		estTime.setId(9L);
 	
 		User user = userService.getAuthenticatedUser();	
 
@@ -95,6 +103,12 @@ public class TaskService {
 			existingTask.setDeadline(updatedDTO.getDeadline());
 		}
 
+		if (updatedDTO.getEstimatedTimeId() != null) {
+			EstimatedTime estTime = new EstimatedTime();
+			estTime.setId(updatedDTO.getEstimatedTimeId());
+			existingTask.setEstimatedTime(estTime);
+		}
+		
 		//getDone só pode ser definido por método específico, que deve chegar aqui já ok
 		if (existingTask.getDone() == null || !existingTask.getDone()) {
 			defineCategory(existingTask);
@@ -212,6 +226,9 @@ public class TaskService {
         Task task = new Task();
         CategoryEntity category = new CategoryEntity();
         category.setId(6L);
+        EstimatedTime estTime = new EstimatedTime();
+		estTime.setId(9L);
+	
         
         task.setDescription("Moodle: " + activity.getModname() + " no curso " + course.getFullname());
         task.setSubject(course.getFullname());
@@ -221,6 +238,7 @@ public class TaskService {
         task.setPriority(false);
         task.setDeadline(null); 
         task.setCategory(category);
+        task.setEstimatedTime(estTime);
         task.setMoodleCourseId(course.getId());
         task.setMoodleCmid((long) activity.getCmid());
    
@@ -235,12 +253,19 @@ public class TaskService {
 	
 	public TaskResponseDTO toDTO(Task task) {
 	    TaskResponseDTO responseDTO = modelMapper.map(task, TaskResponseDTO.class);
+	    
 	    CategoryEntity category = categoryRepository.findById(task.getCategory().getId())
-	                                          .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+	            .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
 	    SimpleCategoryDTO categoryDTO = responseDTO.getCategory();
 	    categoryDTO.setName(category.getName());  
 
+	    EstimatedTime estTime = estTimeRepository.findById(task.getEstimatedTime().getId())
+	    		.orElseThrow(() -> new ResourceNotFoundException("Categoria de tempo não encontrada"));
+	    
+	    EstimatedTimeDTO estTimeDTO = responseDTO.getEstimatedTime();
+	    estTimeDTO.setTime(estTime.getTime());
+	    
 	    return responseDTO;
 	}
 
