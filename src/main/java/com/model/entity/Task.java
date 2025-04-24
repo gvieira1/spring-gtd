@@ -53,6 +53,13 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id")
 	private Project project;
+	
+	@Column(name = "moodle_course_id")
+	private Long moodleCourseId;
+
+	@Column(name = "moodle_cmid")
+	private Long moodleCmid;
+
 
 	
 

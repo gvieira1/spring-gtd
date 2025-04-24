@@ -2,6 +2,7 @@ package com.model.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
+import com.model.dto.ActivityStatusDTO;
+import com.model.dto.CourseDTO;
 import com.model.dto.GroupedTasksResponseDTO;
 import com.model.dto.SimpleCategoryDTO;
 import com.model.dto.TaskRequestDTO;
@@ -36,7 +39,6 @@ public class TaskService {
 		this.categoryRepository = categoryRepository;
 		this.userService = userService;
 	}
-	
 
 	public Page<TaskResponseDTO> getFilteredTasks(Boolean withoutProject, Pageable pageable) {
 		User user = userService.getAuthenticatedUser();	
@@ -191,6 +193,45 @@ public class TaskService {
 
 		return toDTO(saved);
 	}
+	
+
+	public TaskResponseDTO createTaskFromMoodleActivity(User user, CourseDTO course, ActivityStatusDTO activity) {
+		Optional<Task> existingTask = taskRepository.findByUserIdAndMoodleCourseIdAndMoodleCmid(user.getId(), course.getId(), (long) activity.getCmid());
+
+		if (existingTask.isPresent()) {
+			return toDTO(existingTask.get());
+		} else {
+			Task task = this.toTaskFromMoodle(course, activity, user);
+			taskRepository.save(task);
+			return toDTO(task);
+		}
+	
+	}
+	
+	public Task toTaskFromMoodle(CourseDTO course, ActivityStatusDTO activity, User user) {
+        Task task = new Task();
+        CategoryEntity category = new CategoryEntity();
+        category.setId(6L);
+        
+        task.setDescription("Moodle: " + activity.getModname() + " no curso " + course.getFullname());
+        task.setSubject(course.getFullname());
+        task.setUser(user);
+        task.setDone(false);
+        task.setDelegated(false);
+        task.setPriority(false);
+        task.setDeadline(null); 
+        task.setCategory(category);
+        task.setMoodleCourseId(course.getId());
+        task.setMoodleCmid((long) activity.getCmid());
+   
+        return task;
+    }
+	
+	public Optional<Task> findByUserAndMoodleInfo(Long userId, Long courseId, int cmid) {
+	    return taskRepository.findByUserIdAndMoodleCourseIdAndMoodleCmid(userId, courseId, (long) cmid);
+	}
+
+
 	
 	public TaskResponseDTO toDTO(Task task) {
 	    TaskResponseDTO responseDTO = modelMapper.map(task, TaskResponseDTO.class);

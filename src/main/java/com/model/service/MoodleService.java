@@ -1,14 +1,25 @@
 package com.model.service;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.model.dto.ActivityStatusDTO;
+import com.model.dto.CompletionStatusResponse;
+import com.model.dto.CourseDTO;
+import com.model.dto.TaskResponseDTO;
+import com.model.entity.Task;
+import com.model.entity.User;
 
 import io.netty.handler.timeout.TimeoutException;
 import reactor.core.publisher.Mono;
@@ -17,9 +28,11 @@ import reactor.core.publisher.Mono;
 public class MoodleService {
 
     private final WebClient moodleWebClient;  
+    private final TaskService taskService;
 
-    public MoodleService(WebClient moodleWebClient) {
+    public MoodleService(WebClient moodleWebClient, TaskService taskService) {
 		this.moodleWebClient = moodleWebClient;
+		this.taskService = taskService;
 	}
 
 	@Value("${moodle.token}") 
@@ -61,4 +74,69 @@ public class MoodleService {
                     return Mono.error(ex); 
                 });
     }
+	
+
+    public List<CourseDTO> getCoursesForUser(Long moodleUserId) {
+        return moodleWebClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .queryParam("wstoken", token)
+                .queryParam("wsfunction", "core_enrol_get_users_courses")
+                .queryParam("userid", moodleUserId)
+                .queryParam("moodlewsrestformat", "json")
+                .build())
+            .retrieve()
+            .bodyToFlux(CourseDTO.class)
+            .collectList()
+            .block();
+    }
+
+    public List<ActivityStatusDTO> getActivities(Long userId, Long courseId) {
+        CompletionStatusResponse response = moodleWebClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .queryParam("wstoken", token)
+                .queryParam("wsfunction", "core_completion_get_activities_completion_status")
+                .queryParam("userid", userId)
+                .queryParam("courseid", courseId)
+                .queryParam("moodlewsrestformat", "json")
+                .build())
+            .retrieve()
+            .bodyToMono(CompletionStatusResponse.class)
+            .block();
+
+        return response.getStatuses().stream()
+            .collect(Collectors.toList());
+    }
+    
+
+    @Scheduled(fixedRate = 3600000)
+	public List<TaskResponseDTO> syncPendingTasksFromMoodle(User user) {
+		List<CourseDTO> courses = this.getCoursesForUser(user.getMoodleUserId());
+
+		return courses.stream().flatMap(course -> {
+			List<ActivityStatusDTO> activities = this.getActivities(user.getMoodleUserId(), course.getId());
+
+			return activities.stream().map(activity -> {
+				Optional<Task> existingTaskOpt = taskService.findByUserAndMoodleInfo(user.getId(), course.getId(),
+						activity.getCmid());
+
+				boolean isCompletedInMoodle = activity.getState() == 1;
+
+				if (existingTaskOpt.isPresent()) {
+					Task task = existingTaskOpt.get();
+
+					if (isCompletedInMoodle && !Boolean.TRUE.equals(task.getDone())) {
+						taskService.markAsCompleted(task.getId());
+					}
+
+					return taskService.toDTO(task);
+
+				} else if (!isCompletedInMoodle) {
+					return taskService.createTaskFromMoodleActivity(user, course, activity);
+				}
+
+				return null;
+			}).filter(Objects::nonNull);
+		}).toList();
+	}
+ 
 }
