@@ -51,4 +51,10 @@ public class UserService {
 
         return user;
     }
+
+	public void setNotificationDaysBefore(Integer notificationDaysBeforeDefault) {
+		User user = this.getAuthenticatedUser();
+		user.setNotificationDaysBeforeDefault(notificationDaysBeforeDefault);
+        userRepository.save(user);	
+	}
 }

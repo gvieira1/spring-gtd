@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.model.dto.GroupedTasksResponseDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
+import com.model.dto.WeeklyReportDTO;
+import com.model.entity.User;
 import com.model.service.TaskService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +60,12 @@ public class TaskController {
 		
 		return ResponseEntity.ok(taskService.getTasksGroupedByCategory(pageable));
 	}
+	
+	@Operation(summary = "Get tasks Weekly Report")
+	@GetMapping("/weekly-report")
+	public ResponseEntity<WeeklyReportDTO> getWeeklyReport(@AuthenticationPrincipal User user) {
+		return ResponseEntity.ok(taskService.generateWeeklyReport(user));
+	}
 
 	@Operation(summary = "Create a task just with description")
 	@PostMapping
@@ -89,5 +98,6 @@ public class TaskController {
 	    taskService.deleteTask(id);
 	    return ResponseEntity.noContent().build();
 	}
+
 
 }

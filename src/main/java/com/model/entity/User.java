@@ -34,6 +34,9 @@ public class User implements UserDetails{
     
     @Column(name="moodle_user_id", unique = true)
     private Long moodleUserId;
+    
+    private Integer notificationDaysBeforeDefault;
+
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

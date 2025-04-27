@@ -1,5 +1,6 @@
 package com.model.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import com.model.dto.GroupedTasksResponseDTO;
 import com.model.dto.SimpleCategoryDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
+import com.model.dto.WeeklyReportDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
@@ -74,6 +76,7 @@ public class TaskService {
 		Task task = toEntity(dto);
 		task.setCategory(category);
 		task.setUser(user);
+		task.setEstimatedTime(estTime);
 		Task saved = taskRepository.save(task);
 
 		if (saved.getProject() != null) {
@@ -111,6 +114,10 @@ public class TaskService {
 			existingTask.setDeadline(updatedDTO.getDeadline());
 		}
 
+		if (updatedDTO.getSubject() != null) {
+			existingTask.setSubject(updatedDTO.getSubject());
+		}
+		
 		if (updatedDTO.getEstimatedTimeId() != null) {
 			EstimatedTime estTime = new EstimatedTime();
 			estTime.setId(updatedDTO.getEstimatedTimeId());
@@ -207,8 +214,9 @@ public class TaskService {
 		}
 
 		task.setDone(true);
-		Task saved = taskRepository.save(task);
-
+		task.setCompletionDate(LocalDateTime.now());
+		Task saved = taskRepository.save(task);	
+		
 		if (task.getProject() != null) {
 			projectService.updateProjectStatus(task.getProject());
 		}
@@ -257,6 +265,42 @@ public class TaskService {
 	    return taskRepository.findByUserIdAndMoodleCourseIdAndMoodleCmid(userId, courseId, (long) cmid);
 	}
 
+	public WeeklyReportDTO generateWeeklyReport(User user) {
+		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+		List<Task> completedTasks = taskRepository.findAllByUserAndDoneTrueAndCompletionDateAfter(user, sevenDaysAgo);
+
+		int totalTasks = completedTasks.size();
+		double dailyAverage = totalTasks / 7.0;
+
+		Map<String, Long> tasksBySubject = groupBySubject(completedTasks);
+		Map<Boolean, Long> tasksByPriority = groupByPriority(completedTasks);
+		Map<String, Long> tasksByEstimatedTime = groupByEstimatedTime(completedTasks);
+		Map<String, Long> tasksCompletedByDay = groupTasksCompletedByDay(completedTasks);
+
+		return new WeeklyReportDTO(totalTasks, dailyAverage, tasksBySubject, tasksByPriority, tasksByEstimatedTime, tasksCompletedByDay);
+	}
+	
+	private Map<String, Long> groupBySubject(List<Task> tasks) {
+	    return tasks.stream()
+	        .collect(Collectors.groupingBy(
+	            task -> Optional.ofNullable(task.getSubject()).orElse("Sem assunto"),
+	            Collectors.counting()
+	        ));
+	}
+
+	private Map<Boolean, Long> groupByPriority(List<Task> tasks) {
+		return tasks.stream().collect(Collectors.groupingBy(Task::getPriority, Collectors.counting()));
+	}
+
+	private Map<String, Long> groupByEstimatedTime(List<Task> tasks) {
+		return tasks.stream().filter(task -> task.getEstimatedTime() != null)
+				.collect(Collectors.groupingBy(task -> task.getEstimatedTime().getTime(), Collectors.counting()));
+	}
+	
+	private Map<String, Long> groupTasksCompletedByDay(List<Task> tasks) {
+	    return tasks.stream()
+	        .collect(Collectors.groupingBy(task -> task.getCompletionDate().toLocalDate().toString(), Collectors.counting()));
+	}
 
 	
 	public TaskResponseDTO toDTO(Task task) {

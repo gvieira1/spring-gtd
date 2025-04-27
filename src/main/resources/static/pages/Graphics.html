@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Relatório Semanal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="container">
+  <h2>Relatório Semanal</h2>
+  <p>Média diária: <span id="mediaDiaria"></span></p>
+
+  <canvas id="graficoAssunto" width="400" height="200"></canvas>
+  <canvas id="graficoPrioridade" width="400" height="200"></canvas>
+  <canvas id="graficoTempo" width="400" height="200"></canvas>
+  <canvas id="lineChart" width="400" height="200"></canvas>
+
+  <script>
+    $(document).ready(function () {
+      $.ajax({
+        url: '/api/tasks/weekly-report',
+        method: 'GET',
+        success: function (data) {
+          $('#mediaDiaria').text(data.dailyAverage.toFixed(2));
+          
+         
+          new Chart(document.getElementById("lineChart"), {
+            type: 'line',
+            data: {
+              labels: Object.keys(data.tasksCompletedByDay),
+              datasets: [{
+                label: 'Tarefas Concluídas por Dia',
+                data: Object.values(data.tasksCompletedByDay),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                fill: false
+              }]
+            },
+            options: {
+              scales: {
+                y: { beginAtZero: true }
+              }
+            }
+          });
+
+          new Chart(document.getElementById('graficoAssunto'), {
+            type: 'bar',
+            data: {
+              labels: Object.keys(data.tasksBySubject),
+              datasets: [{
+                label: 'Tarefas por Assunto',
+                data: Object.values(data.tasksBySubject),
+                backgroundColor: 'rgba(75, 192, 192, 0.7)'
+              }]
+            }
+          });
+
+          new Chart(document.getElementById('graficoPrioridade'), {
+            type: 'doughnut',
+            data: {
+              labels: ['Alta Prioridade', 'Normal'],
+              datasets: [{
+                label: 'Prioridade',
+                data: [data.tasksByPriority.true || 0, data.tasksByPriority.false || 0],
+                backgroundColor: ['#ff4d4d', '#4da6ff']
+              }]
+            }
+          });
+
+          new Chart(document.getElementById('graficoTempo'), {
+            type: 'pie',
+            data: {
+              labels: Object.keys(data.tasksByEstimatedTime),
+              datasets: [{
+                label: 'Tempo Estimado',
+                data: Object.values(data.tasksByEstimatedTime),
+                backgroundColor: ['#ffcc00', '#66cc66', '#9999ff', '#ff9966']
+              }]
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

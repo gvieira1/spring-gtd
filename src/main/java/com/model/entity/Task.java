@@ -1,6 +1,7 @@
 package com.model.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,6 +60,9 @@ public class Task {
 
 	@Column(name = "moodle_cmid")
 	private Long moodleCmid;
+	
+	private LocalDateTime completionDate;
+
 
 
 	
