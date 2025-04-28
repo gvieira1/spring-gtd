@@ -43,10 +43,20 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
+	public void saveUser(User user) {
+		userRepository.save(user);
+	}
+	
+	public User findByEmail(String email) {
+	    return userRepository.findUserByEmail(email)
+	        .orElseThrow(() -> new UserNotFoundException("Usuário não existe!"));
+	}
+
+	
 	public User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof User user)) {
-            throw new UserNotFoundException("Usuário não autenticado");
+        	throw new UserNotFoundException("Usuário não existe!");
         }
 
         return user;

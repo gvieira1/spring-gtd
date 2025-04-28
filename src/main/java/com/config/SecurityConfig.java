@@ -28,7 +28,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers( "/", "/index.html", "/auth/**" ).permitAll()
+            	.requestMatchers( "/", "/index.html", "/auth/**", "/resetPassword**", "/forgotPassword.html", "/api/password/**" ).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
