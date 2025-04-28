@@ -12,6 +12,9 @@ import com.model.entity.EstimatedTime;
 import com.repository.EstimatedTimeRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("api/estimated-times")
@@ -21,6 +24,9 @@ public class EstimatedTimeController {
     private EstimatedTimeRepository estimatedTimeRepository;
 
     @Operation(summary = "Get all Estimated Time options")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
     @GetMapping
     public ResponseEntity<List<EstimatedTime>> getAllEstimatedTimes() {
         return ResponseEntity.ok(estimatedTimeRepository.findAll());

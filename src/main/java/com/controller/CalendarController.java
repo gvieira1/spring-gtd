@@ -12,6 +12,11 @@ import com.model.dto.TaskResponseDTO;
 import com.model.service.CalendarService;
 import com.model.service.TaskService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/calendar")
 public class CalendarController {
@@ -24,7 +29,9 @@ public class CalendarController {
 		this.calendarService = calendarService;
 	}
 
-
+	@Operation(summary = "Fetch the task list to populate the calendar")
+			@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Fetched list"),
+			@ApiResponse(responseCode = "403", description = "Access denied", content = @Content) })
 	@GetMapping
 	public ResponseEntity<List<CalendarEventDTO>> getCalendarTasks() {
 	    List<TaskResponseDTO> allTasks = taskService.getTasksByUserId(); 

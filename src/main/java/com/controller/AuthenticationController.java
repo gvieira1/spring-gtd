@@ -16,6 +16,10 @@ import com.model.entity.User;
 import com.model.service.TokenService;
 import com.model.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -33,6 +37,11 @@ public class AuthenticationController {
 		this.userService = userService;
 	}
 
+    @Operation(summary = "Log in an existing user", description = "Log in an existing user")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "200", description = "User logged in"),
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
 	@PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationDTO data, HttpServletResponse response) {
 		
@@ -52,6 +61,11 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Register a new user", description = "Registers a new user by collecting the username, email, and password")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "200", description = "User created"),
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
 	@PostMapping("/register")
 	public ResponseEntity<Void> register(@RequestBody RegisterDTO registerDTO) {
 		userService.register(registerDTO);

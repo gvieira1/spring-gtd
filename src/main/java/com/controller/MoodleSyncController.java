@@ -13,6 +13,11 @@ import com.model.entity.User;
 import com.model.service.MoodleService;
 import com.model.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/moodle")
 public class MoodleSyncController {
@@ -25,7 +30,10 @@ public class MoodleSyncController {
 		this.userService = userService;
 	}
 
-
+    @Operation(summary = "Synchronize user email with Moodle ID")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
 	@PostMapping("/sync")
     public ResponseEntity<String> syncUserWithMoodle(Authentication auth) {
         User user = userService.getAuthenticatedUser();
@@ -34,6 +42,10 @@ public class MoodleSyncController {
         return ResponseEntity.ok("Usuário sincronizado com o Moodle! ID: " + moodleId);
     }
 	
+    @Operation(summary = "Synchronize pending tasks from Moodle with the system")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
 	@PostMapping("/sync-tasks")
     public ResponseEntity<List<TaskResponseDTO>> syncTasks(Authentication auth) {
 		User user = userService.getAuthenticatedUser();

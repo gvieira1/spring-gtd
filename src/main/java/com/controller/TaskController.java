@@ -81,16 +81,17 @@ public class TaskController {
 		return ResponseEntity.ok(taskService.updateTask(id, updatedDTO));      
     }
 	
+	@Operation(summary = "Remove Project from Task")
 	@PatchMapping("/{id}/remove-project")
 	public ResponseEntity<TaskResponseDTO> removeProject(@PathVariable Long id) {
 	    return ResponseEntity.ok(taskService.removeProjectFromTask(id));
 	}
 	
+	@Operation(summary = "Mark Task as complete")
 	@PatchMapping("/{id}/complete")
 	public ResponseEntity<TaskResponseDTO> markTaskAsComplete(@PathVariable Long id) {
 	    return ResponseEntity.ok(taskService.markAsCompleted(id));
 	}
-
 	
 	@Operation(summary = "Delete a task by its ID")
 	@DeleteMapping("/{id}")

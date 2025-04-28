@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.model.dto.NotificationPreferenceDTO;
 import com.model.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -19,6 +24,11 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    @Operation(summary = "Update user notification preference")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
     @PostMapping("/notification-preference")
     public ResponseEntity<Void> updateNotificationPreference(@RequestBody NotificationPreferenceDTO preferenceDTO) {
     	userService.setNotificationDaysBefore(preferenceDTO.notificationDaysBeforeDefault());

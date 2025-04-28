@@ -12,6 +12,11 @@ import com.model.dto.TaskNotificationDTO;
 import com.model.entity.User;
 import com.model.service.NotificationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
@@ -22,6 +27,11 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
+
+    @Operation(summary = "Fetch tasks with upcoming due dates")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
     @GetMapping
     public ResponseEntity<List<TaskNotificationDTO>>getUpcomingTasks(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(notificationService.getUpcomingTasks(user));
