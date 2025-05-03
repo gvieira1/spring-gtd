@@ -1,6 +1,6 @@
 
 import { updateSwitchLabel } from './helpers.js';
-import { definirCategoria } from './api/categorias.js';
+import { defineCategory } from './api/categorias.js';
 
 export function initializeSwitches() {
     $('.form-check-input').each(function() {
@@ -15,6 +15,6 @@ export function initializeSwitches() {
         updateSwitchLabel(switchElement, label);
     });
 
-    $('#formSwitch1, #formSwitch2, #prazomodal').on('change', definirCategoria);
+    $('#formSwitch1, #formSwitch2, #deadlinemodal').on('change', defineCategory);
 	
 }

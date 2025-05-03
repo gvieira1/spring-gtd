@@ -47,11 +47,20 @@ public class TaskService {
 		this.userService = userService;
 	}
 
-	public Page<TaskResponseDTO> getFilteredTasks(Boolean withoutProject, Pageable pageable) {
+	public Page<TaskResponseDTO> getFilteredTasks(Boolean withoutProject, String category, Pageable pageable) {
 		User user = userService.getAuthenticatedUser();	
-		Page<Task> tasks = Boolean.TRUE.equals(withoutProject) ? taskRepository.findByUserIdAndProjectIsNull(user.getId(), pageable)
-				: taskRepository.findByUserId(user.getId(), pageable);
 
+		Page<Task> tasks;
+		if (Boolean.TRUE.equals(withoutProject)) {
+		    tasks = taskRepository.findByUserIdAndProjectIsNull(user.getId(), pageable);
+		} else {
+		    if (category != null && !category.isEmpty()) {
+		        tasks = taskRepository.findByUserIdAndCategory_Name(user.getId(), category, pageable);
+		    } else {
+		        tasks = taskRepository.findByUserId(user.getId(), pageable); 
+		    }
+		}
+		
 		return tasks.map(this::toDTO);
 	}
 
@@ -110,9 +119,8 @@ public class TaskService {
 			existingTask.setPriority(updatedDTO.getPriority());
 		}
 
-		if (updatedDTO.getDeadline() != null) {
-			existingTask.setDeadline(updatedDTO.getDeadline());
-		}
+		existingTask.setDeadline(updatedDTO.getDeadline());
+		
 
 		if (updatedDTO.getSubject() != null) {
 			existingTask.setSubject(updatedDTO.getSubject());

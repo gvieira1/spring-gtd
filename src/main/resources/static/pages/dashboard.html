@@ -3,384 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTD for Students</title>
-    <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>AcademicGTD</title>
+    <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">	
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+    
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg  bg-nav">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">GTD For Students</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-3 mb-lg-0">
-        <li class="nav-item me-3">
-          <a class="nav-link hoverb" aria-current="page" data-bs-toggle="modal"
-						data-bs-target="#AddTarefa">Adicionar Tarefa</a>
-        </li>
-        <li class="nav-item me-3">
-          <a class="nav-link hoverb" aria-current="page" data-bs-toggle="modal"
-						data-bs-target="#AddProjeto">Criar Projeto</a>
-        </li>
-        <li class="nav-item ">
-          <a class="nav-link hoverb" aria-current="page" href="./relatorio.html">Relatório semanal</a>
-        </li>
-      </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="No que vai trabalhar hoje?" aria-label="Search">
-        <button class="btn btn-outline-dark hoverb" type="submit">Filtre</button>
-      </form>
-    </div>
-  </div>
-</nav>
+    <!-- DESKTOP VIEW -->
+    <div class="container-fluid d-none d-md-block">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <h5><i class="bi bi-mortarboard-fill"></i>  <a class="text-decoration-none text-dark" href="/pages/dashboard.html">AcademicGTD</a></h5>
+                <hr />
+                <p class="fw-bold" >Caixa de Entrada</p>
+                <p class="clickable-icon" data-href="/categorias/caixa-de-entrada" data-categoria="Caixa de Entrada"><i class="bi bi-inbox-fill "></i> Capture 
+                <span class="task-count text-muted ms-2" data-category="Caixa de Entrada" style="display: none;"></span>
+                </p>
+                <p class="fw-bold mt-3 ">Categorias</p>
+                <p class="clickable-icon" data-href="/categorias/quando-puder" data-categoria="Quando Puder"><i class="bi bi-arrow-right-circle "></i> Quando Puder
+                <span class="task-count text-muted ms-2" data-category="Quando Puder" style="display: none;"></span>
+                </p>
+                <p class="clickable-icon" data-href="/categorias/agendado" data-categoria="Agendado"><i class="bi bi-calendar-event "></i> Agendados
+                 <span class="task-count text-muted ms-2" data-category="Agendado" style="display: none;"></span>
+                </p>
+                <p class="clickable-icon" data-href="/categorias/projeto" data-categoria="Projeto"><i class="bi bi-kanban "></i> Projetos
+                 <span class="task-count text-muted ms-2" data-category="Projeto" style="display: none;"></span>
+                </p>
+                <p class="clickable-icon" data-href="/categorias/aguardando-resposta" data-categoria="Aguardando Resposta"><i class="bi bi-hourglass-split "></i> Aguardando
+                <span class="task-count text-muted ms-2 " data-category="Aguardando Resposta" style="display: none;"></span>
+                </p>
+                <p class="clickable-icon" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
+                 <span class="task-count text-muted ms-2" data-category="Arquivo" style="display: none;"></span>
+                 </p>
+                <p class="clickable-icon" ><img width="18" height="18" src="https://img.icons8.com/material/18/moodle.png" alt="moodle" /> Moodle</p>
 
-	<div class="container-fluid justify-content-center mt-3 g-3 ">
-    <!-- Parte Superior -->
-    <div class="top-section">
-        <div class="row ">
-            <!-- Coluna 1: Como funciona? -->
-            <div class="col">
-                <div class="card text-center">
-                    <h4 class="card-header">Como funciona?</h4>
-                    <div class="card-body">
-                        <h6 class="card-text mt-1">Clique em Adicionar Tarefa para capturar suas ideias.</h6>
-                        <h6 class="card-text mt-1">Tem um tempinho? Organize seus afazeres clicando em classificar.</h6>
-                    </div>
-                </div>
             </div>
-            
-            <!-- Coluna 2: Na caixa de entrada -->
-            <div class="col overflow-y-scroll">
-                <div class="card ">
-                    <h4 class="card-header">Na caixa de entrada</h4>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush " id="tarefasList">
-                            <!-- Lista dinâmica -->
-                        </ul>
+
+            <!-- Main content -->
+            <div class="col-md-10 ms-auto">
+                <nav class="d-flex justify-content-between p-3 bg-white border-bottom w-100">
+                    <div>
+                        <a class="me-2 text-decoration-none link-bg" href="#">Dashboard</a>
+                        <a class="me-2 text-decoration-none link-bg" href="#">Tarefas</a>
+                        <a class="me-2 text-decoration-none  link-bg" href="#">Projetos</a>
+                        <a class="text-decoration-none  link-bg" href="#">Calendário</a>
+
+                    </div>
+                    <div>
+                        <i class="bi bi-bell-fill me-3 clickable-icon" data-bs-toggle="modal"
+                            data-bs-target="#configNotifications"></i>
+                        <i class="bi bi-person-circle clickable-icon"></i>
+                    </div>
+                </nav>
+
+                <div class="container mt-4">
+
+						<div class="input-group mb-3">
+							<input type="text" class="form-control"
+								placeholder="Capture uma nova tarefa..." id="newAction" required />
+							<button class="btn btn-dark btn-bg" data-bs-toggle="modal"
+								data-bs-target="#taskOrProjectModal" id="addBtn" disabled>Adicionar</button>
+						</div>
+					
+					<h4 class="fw-bold" id="categoryTitle"></h4>
+						<div id="taskList" class="mt-4"></div>
+				</div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE VIEW -->
+    <div class="d-md-none">
+        <div class="p-3 bg-white border-bottom">
+            <h6><i class="bi bi-mortarboard-fill "></i> AcademicGTD</h6>
+            <div class="input-group mt-3">
+                <input type="text" class="form-control" placeholder="Capture uma nova tarefa..." />
+                <button class="btn btn-dark btn-bg"><i class="bi bi-plus-circle"></i></button>
+            </div>
+        </div>
+
+        <div class="container mt-3 mb-5" data-bs-toggle="modal" data-bs-target="#taskModal">
+            <h6>Entrada</h6>
+
+            <div class="task-card">
+                <input type="checkbox" /> Research methodology chapter
+                <div class="text-muted">Due: Mar 15, 2025</div>
+            </div>
+            <div class="task-card">
+                <input type="checkbox" /> Literature review notes
+                <div class="text-muted">Due: Mar 18, 2025</div>
+            </div>
+
+            <h6 class="mt-4">Quando Puder</h6>
+            <div class="task-card d-flex justify-content-between">
+                <span><i class="bi bi-journal-text me-2"></i> Thesis Writing</span>
+                <span class="badge bg-secondary">4 tasks</span>
+            </div>
+            <div class="task-card d-flex justify-content-between">
+                <span><i class="bi bi-journal me-2"></i> Lab Research</span>
+                <span class="badge bg-secondary">2 tasks</span>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="nav-link active "><i class="bi bi-inbox"></i><br>Entrada</a>
+            <a href="#" class="nav-link "><i class="bi bi-calendar-event"></i><br>Calendário</a>
+            <a href="#" class="nav-link "><i class="bi bi-bookmarks"></i><br>Categorias</a>
+            <a href="#" class="nav-link "><i class="bi bi-person-circle"></i><br>Perfil</a>
+        </div>
+    </div>
+
+
+    <!-- Modal Projeto ou Tarefa -->
+    <div>
+        <div class="modal fade" id="taskOrProjectModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">                     
+                    <div class="modal-body text-center p-4">
+                    	<i class="bi bi-question-square-fill fs-1 mb-3"></i>
+                        <h5 class="mt-3 mb-5 text-muted fw-semibold ">Como deseja organizar esta ação?</h5>
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="button" class="btn btn-outline-secondary shadow-sm btn-modal-bg"
+                                id="convertToProject">
+                                <strong>Organizar como Projeto</strong>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary shadow-sm btn-modal-bg "
+                            	id="submitAsTask">
+                                <strong>Adicionar como Tarefa única</strong>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-	<br>
+    
 
-    <!-- Parte Inferior -->
-    <div class="bottom-section ">
-        <div class="col-md-12">
-            <div class="row g-2">
-                <!-- Tabelas -->
-                <div class="col overflow-y-scroll">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr><th>Projetos</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr id="Projeto">
-                                <!-- lista dinâmica -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col overflow-y-scroll">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr><th>Quando puder</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr id="QuandoPuder">
-                                <!-- lista dinâmica -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col overflow-y-scroll">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr><th>Agendados</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr id="Agendado">
-                                <!-- lista dinâmica -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col overflow-y-scroll">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr><th>Aguardando resposta</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr id="AguardandoResposta">
-                                <!-- lista dinâmica -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col overflow-y-scroll">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr><th>Arquivo</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr id="Arquivo">
-                                <!-- lista dinâmica -->
-                            </tr>
-                        </tbody>
-                    </table>
+    <!-- Modal Configura Notificações -->
+    <div>
+        <div class="modal fade" id="configNotifications" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow-lg rounded-4">
+                    <div class="modal-header ">
+                        <h5 class="modal-title text-dark"><i class="bi bi-bell "></i> Configuração de Notificações</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body ">
+                        <p class="mt-3 mb-3 text-muted fw-semibold ">Personalize como você gostaria de ser notificado(a)
+                            sobre o prazo de suas tarefas<br><br></p>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notSwitch1">
+                                <label class="not-check-label" for="notSwitch1" id="notSwitchLabel1">Notificações
+                                    Web</label>
+                            </div>
+                        </div>
+                        <div class="mb-2 mt-4">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle  btn-modal-bg"
+                                    data-bs-toggle="dropdown" aria-expanded="false">Me notifique...
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">1 dia antes</a></li>
+                                    <li><a class="dropdown-item" href="#">2 dias antes</a></li>
+                                    <li><a class="dropdown-item" href="#">3 dias antes</a></li>
+                                    <li><a class="dropdown-item" href="#">7 dias antes</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-	
-
-	<!-- Modal AddTarefa Inicio-->
-	<div class="modal fade text-center" id="AddTarefa" tabindex="-1"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h1 class="modal-title fs-5">O que precisa fazer?</h1>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<div class="modal-body ">
-					<form id="tarefaFormInicio">
-
-						<div class="input-group mb-3">
-							<br>
-							<br> <input type="text" class="form-control" id="descricaoadd"
-								name="descricaoadd" required>
-							<button type="submit" class="btn btnadd">Adicionar</button>
-							<br>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<!-- Modal AddProjeto Inicio-->
-	<div class="modal fade text-center" id="AddProjeto" tabindex="-1"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h1 class="modal-title fs-5">Qual seu novo projeto?</h1>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<div class="modal-body ">
-					<form id="projetoForm">
-						<div class="input-group mb-3">
-							<br>
-							<br> <input type="text" class="form-control" id="descricaopro"
-								name="descricaopro" required>
-							<button type="submit" class="btn btnadd">Adicionar</button>
-							<br>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
 
 
-	<!-- Modal para edição -->
-	<div class="modal fade" id="tarefasModal" tabindex="-1"
-		aria-labelledby="tarefasModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="tarefasModalLabel">Editar Tarefa</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div id="taskId" data-id=""></div>
-					<div class="p-4 border rounded-3 shadow-sm">
-						<form id="tarefaForm">
-							<input type="hidden" id="tarefaId">
+    <!-- Modal para edição de tarefa -->
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="tarefasModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tarefasModalLabel">Editar Tarefa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="taskId" data-id=""></div>
+                    <div class="p-4 border rounded-3 shadow-sm">
+                        <form id="taskForm">
+                            <input type="hidden" id="tarefaId">
 
-							<div class="mb-3">
-								<label for="descricaomodal" class="form-label">Descrição</label>
-								<input type="text" class="form-control" id="descricaomodal"
-									name="descricaomodal" required>
-							</div>
+                            <div class="mb-2">
+                                <label for="descriptionmodal" class="form-label fw-semibold">Descrição</label>
+                                <input type="text" class="form-control" id="descriptionmodal" name="descriptionmodal"
+                                    required>
+                            </div>
 
-							<div class="mb-3">
-								<label for="prioridademodal" class="form-label">É
-									prioridade?</label>
-								<div class="form-check form-switch">
-									<input class="form-check-input" type="checkbox"
-										id="formSwitch1"> <label class="form-check-label"
-										for="formSwitch1" id="switchLabel1">Não</label>
-								</div>
-							</div>
+                            <div class="mb-2">
+                                <label for="prioridademodal" class="form-label fw-semibold">É
+                                    prioridade?</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="formSwitch1"> <label
+                                        class="form-check-label" for="formSwitch1" id="switchLabel1">Não</label>
+                                </div>
+                            </div>
 
-							<div class="mb-3">
-								<label for="prazomodal" class="form-label">Prazo</label> <input
-									type="date" class="form-control" id="prazomodal"
-									name="prazomodal">
-							</div>
+                            <div class="mb-2">
+                                <label for="deadlinemodal" class="form-label fw-semibold">Prazo</label> <input type="date"
+                                    class="form-control" id="deadlinemodal" name="deadlinemodal">
+                            </div>
 
-							<div class="mb-3">
-								<label for="tempoEstimadomodal" class="form-label">Tempo
-									Estimado</label> <select id="tempo_estimado" name="tempo_estimado"
-									class="form-select" required>
-									<!-- Opções -->
-								</select>
-							</div>
+                            <div class="mb-2">
+                                <label for="tempoEstimadomodal" class="form-label fw-semibold">Tempo
+                                    Estimado</label> <select id="estimated_time" name="estimated_time"
+                                    class="form-select" required>
+                                    <!-- Opções -->
+                                </select>
+                            </div>
 
-							<div class="mb-3">
-								<label for="assuntomodal" class="form-label">Assunto</label> <input
-									type="text" class="form-control" id="assuntomodal"
-									name="assuntomodal" required>
-							</div>
+                            <div class="mb-2">
+                                <label for="subjectmodal" class="form-label fw-semibold">Assunto</label> <input
+                                    type="text" class="form-control" id="subjectmodal" name="subjectmodal" required>
+                            </div>
 
-							<div class="mb-3">
-								<label for="delegadomodal" class="form-label">Pode ser
-									delegado?</label>
-								<div class="form-check form-switch">
-									<input class="form-check-input" type="checkbox"
-										id="formSwitch2"> <label class="form-check-label"
-										for="formSwitch2" id="switchLabel2">Não</label>
-								</div>
-							</div>
+                            <div class="mb-2">
+                                <label for="delegatedmodal" class="form-label fw-semibold">Pode ser
+                                    delegado?</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="formSwitch2"> <label
+                                        class="form-check-label" for="formSwitch2" id="switchLabel2">Não</label>
+                                </div>
+                            </div>
 
-							<div class="mb-3">
-								<label for="categoriamodal" class="form-label">Categoria</label>
-								<select class="form-select" id="categoriamodal"
-									name="categoriamodal" disabled>
-									<option value="1">Quando Puder</option>
-									<option value="2">Agendado</option>
-									<option value="3">Projeto</option>
-									<option value="4">Aguardando Resposta</option>
-									<option value="5">Arquivo</option>
-									<option value="6">Arquivo</option>
-								</select>
-							</div>
-							
+
+                            <div class="mb-2">
+                                <label for="categorymodal" class="form-label fw-semibold">Categoria</label>
+                                <select class="form-select" id="categorymodal" name="categorymodal" disabled>
+                                    <option value="1">Quando Puder</option>
+                                    <option value="2">Agendado</option>
+                                    <option value="3">Projeto</option>
+                                    <option value="4">Aguardando Resposta</option>
+                                    <option value="5">Arquivo</option>
+                                    <option value="6">Arquivo</option>
+                                </select>
+                            </div>
+
 							<div class="d-flex justify-content-between mt-4">
-								<button type="button" class="btn btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal" id="deleteTask">Excluir tarefa</button>
-								<button type="submit" class="btn btnadd">Salvar Alterações</button>
+								<button type="button" class="btn btn-outline-danger ms-2"
+									id="deleteTaskBtn" data-bs-toggle="modal"
+									data-bs-target="#deleteModal">Excluir
+									tarefa</button>
+
+								<button type="submit"
+									class="btn btn-outline-secondary btn-modal-bg">Salvar
+									Alterações</button>
 							</div>
 						</form>
-					</div>
+                    </div>
 
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<!-- Modal para adição de subtask -->
-	<div class="modal fade" id="subTarefaModal" tabindex="-1"
-		aria-labelledby="subTarefaModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="subTarefaModalLabel">Ver Projeto</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div id="subtaskId" data-id=""></div>
-					<div class="p-4 border rounded-3 shadow-sm">
-						<h5>Sub tarefas</h5>
-						<ul class="list-group">
-							<li
-								class="list-group-item d-flex justify-content-between align-items-center">
-								Sub Tarefa 1 <input type="checkbox" >
-							</li>
-							<li
-								class="list-group-item d-flex justify-content-between align-items-center">
-								Sub Tarefa 2 <input type="checkbox" >
-							</li>
-							<li
-								class="list-group-item d-flex justify-content-between align-items-center">
-								Sub Tarefa <input type="checkbox" >
-							</li>
-							<li
-								class="list-group-item d-flex justify-content-between align-items-center">
-								Sub Tarefa <input type="checkbox">
-							</li>
-							<li
-								class="list-group-item d-flex justify-content-between align-items-center">
-								Sub Tarefa <input type="checkbox" >
-							</li>
-						</ul>
 
-						<div class="d-flex justify-content-between mt-4">
-							<button type="button" class="btn btn-outline-danger ms-2"
-								data-bs-toggle="modal" data-bs-target="#deleteModal"
-								id="deleteTask">Excluir Projeto</button>
-							<button type="submit" class="btn btnadd">Nova Sub Tarefa</button>
-						</div>
-					</div>
 
-				</div>
-
-			</div>
-		</div>
-	</div>
+    <!-- Modal de Confirmação Delete-->
+    <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3"></i>
+                    <h5 class="mb-3">Tem certeza que deseja excluir a tarefa <strong class="text-danger" id="taskToDeleteDesc"></strong>?</h5>
+                    <p class="text-muted">Essa ação não poderá ser desfeita.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Sim, excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 	<!-- Modal Feito -->
-	<div class="modal fade" id="feitoModal" tabindex="-1" aria-labelledby="feitoModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h1 class="modal-title fs-5" id="feitoModalLabel">Finalizar tarefa?</h1>
-	      </div>
-	      <form id="feitoModalForm">
-	        <div class="modal-footer d-flex justify-content-between mt-4">
-	          <button type="button" class="btn btn-outline-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
-	          <button type="submit" class="btn btnadd">Marcar como feito</button>
-	        </div>
-	      </form>
-	    </div>
-	  </div>
+	<div class="modal" id="doneModal" tabindex="-1"
+		aria-labelledby="doneModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body text-center p-4">
+					<i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+					<h5 class="mb-3" id="doneModalLabel">Finalizar tarefa?</h5>
+
+					<form id="doneModalForm">
+						<div class="d-flex justify-content-center gap-3 mt-4">
+							<button type="button" class="btn btn-outline-secondary"
+								data-bs-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn btn-success">Marcar
+								como feito</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
-	
-	    <!-- Modal Delete -->
-	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h1 class="modal-title fs-5" id="feitoModalLabel">Excluir tarefa?</h1>
-	      </div>
-	      <form id="deleteModalForm">
-	        <div class="modal-footer d-flex justify-content-between mt-4">
-	          <button type="button" class="btn btn-outline-danger ms-2" data-bs-dismiss="modal">Cancelar</button>
-	          <button type="submit" class="btn btnadd">Excluir permanentemente</button>
-	        </div>
-	      </form>
-	    </div>
-	  </div>
-	</div>
+
+<!-- Toast alteração de categoria -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+  <div id="categoryToast" class="toast align-items-center bg-light text-dark border-0 fs-6 w-auto px-4 py-3" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="categoryToastBody">
+        A tarefa foi movida com sucesso!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+    </div>
+  </div>
+</div>
 
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+	<script type="module" src="../scripts/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" ></script>
     
-    <script type="module" src="../scripts/helpers.js"></script>
-    <script type="module" src="../scripts/api/temposEstimados.js"></script>
-    <script type="module" src="../scripts/api/tarefas.js"></script>
-    <script type="module" src="../scripts/api/categorias.js"></script>
-    <script type="module" src="../scripts/api/projetos.js"></script>
-    <script type="module" src="../scripts/projetoForm.js"></script>
-    <script type="module" src="../scripts/modal.js"></script>
-    <script type="module" src="../scripts/tarefaForm.js"></script>
-    <script type="module" src="../scripts/main.js"></script>
+   
 </body>
 </html>
 

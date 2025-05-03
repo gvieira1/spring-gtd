@@ -17,6 +17,7 @@ import com.model.dto.ProjectResponseDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
+import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.model.entity.User;
@@ -81,10 +82,13 @@ public class ProjectService {
 	    		.orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + idProject));
 	    CategoryEntity category = new CategoryEntity();
 	    category.setId(3L);
+	    EstimatedTime estTime = new EstimatedTime();
+		estTime.setId(9L);
 	    Task task = modelMapper.map(taskDTO, Task.class);
 	    task.setProject(project);
 	    task.setCategory(category);
 	    task.setUser(user);
+	    task.setEstimatedTime(estTime);
 		Task saved = taskRepository.save(task);
 
 		return modelMapper.map(saved, TaskResponseDTO.class);

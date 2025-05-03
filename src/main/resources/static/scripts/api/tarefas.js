@@ -78,7 +78,7 @@ export function openEditModalClassificado(tarefaId) {
     });
 }
 
-export function updateTarefa(tarefaId, tarefaAtualizada) {
+/*export function updateTarefa(tarefaId, tarefaAtualizada) {
     $.ajax({
         url: `/gtd-spring/atualiza/${tarefaId}`,
         type: 'PUT',
@@ -95,44 +95,46 @@ export function updateTarefa(tarefaId, tarefaAtualizada) {
             alert('Erro ao atualizar a tarefa: ' + textStatus);
         }
     });
-}
+}*/
+//
+//export function updateFeito(tarefaId, tarefaFeita) {
+//	
+//	$.ajax({
+//	        url: `/gtd-spring/atualiza/${tarefaId}`,  
+//	        method: 'PUT',
+//	        data: JSON.stringify(tarefaFeita),
+//	        contentType: 'application/json',
+//	        success: function(response) {
+//	            console.log('Tarefa marcada como feita:', response);
+//				loadCategorias();
+//	        },
+//	        error: function(xhr, status, error) {
+//	            console.log('Erro ao atualizar tarefa feita:', error, xhr, status);
+//	        }
+//	});
+//}
 
-export function updateFeito(tarefaId, tarefaFeita) {
-	
-	$.ajax({
-	        url: `/gtd-spring/atualiza/${tarefaId}`,  
-	        method: 'PUT',
-	        data: JSON.stringify(tarefaFeita),
-	        contentType: 'application/json',
-	        success: function(response) {
-	            console.log('Tarefa marcada como feita:', response);
-				loadCategorias();
-	        },
-	        error: function(xhr, status, error) {
-	            console.log('Erro ao atualizar tarefa feita:', error, xhr, status);
-	        }
-	});
-}
 
-export function deleteTarefa(tarefaId, tarefaDelete) {
-	
-	console.log(tarefaId, tarefaDelete);
-    $.ajax({
-        url: `/gtd-spring/atualiza/${tarefaId}`, 
-        type: 'DELETE',
-        data: JSON.stringify(tarefaDelete), 
-        contentType: 'application/json',
-        success: function(response) {
-            if (response) {
-				console.log('Tarefa excluída:', response);
-			    loadCategorias();
-            } else {
-                alert('Erro ao excluir tarefa.');
-            }
-        },
-        error: function(xhr, status, error) {
-            alert('Ocorreu um erro ao tentar excluir a tarefa.', error, xhr, status);
-        }
-    });
-}
+
+//export function deleteTask(taskId) {
+//    console.log('Deletando tarefa:', taskId);
+//
+//    $.ajax({
+//        url: `/api/task/${taskId}`,
+//        type: 'DELETE',
+//        success: function(_, textStatus, xhr) {
+//            if (xhr.status === 204 || xhr.status === 200) {
+//                console.log('Tarefa excluída com sucesso.');
+//                loadCategorias();
+//            } else {
+//                alert('Erro inesperado. Código de status: ' + xhr.status);
+//            }
+//        },
+//        error: function(xhr, status, error) {
+//            console.error('Erro ao excluir a tarefa:', error);
+//            alert('Ocorreu um erro ao tentar excluir a tarefa.');
+//        }
+//    });
+//}
+
 

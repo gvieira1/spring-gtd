@@ -11,3 +11,33 @@ export function updateSwitchLabel(switchElement, switchLabel) {
 export function formatarCategoriaParaId(categoria) {
     return categoria.trim().replace(/\s+/g, '');
 }
+
+export function  handleButtonState(){
+	$('#newAction').on('input', function () {
+	        if ($(this).val().trim() === '') {
+	            $('#addBtn').prop('disabled', true);
+	        } else {
+	            $('#addBtn').prop('disabled', false);
+	        }
+	    });
+}
+
+export function getCurrentCategoryFromURL() {
+	const pathToCategory = {
+		'caixa-de-entrada': 'Caixa de Entrada',
+		'quando-puder': 'Quando Puder',
+		'agendado': 'Agendados',
+		'projeto': 'Projeto',
+		'aguardando-resposta': 'Aguardando Resposta',
+		'arquivo': 'Arquivo'
+	};
+
+  const currentPath = location.pathname;
+  const extractedCategory = currentPath.split('/').pop();
+
+  if (currentPath.includes("/categorias/")) {
+    return pathToCategory[extractedCategory] || decodeURIComponent(extractedCategory);
+  }
+
+  return null;
+}

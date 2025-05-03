@@ -12,7 +12,7 @@ $('#tarefaFormInicio').submit(function(event) {
     createTarefa(tarefa);
 });
 
-$('#tarefaForm').submit(function(e) {
+/*$('#tarefaForm').submit(function(e) {
     e.preventDefault();
 
     const tarefaId = $('#taskId').data('id');
@@ -28,9 +28,9 @@ $('#tarefaForm').submit(function(e) {
     };
 
     updateTarefa(tarefaId, tarefaAtualizada);
-});
+});*/
 
-$('#feitoModalForm').submit(function(e) {
+/*$('#feitoModalForm').submit(function(e) {
     e.preventDefault();  
 
 	const tarefaId = $('#feitoModal').data('tarefa-id');  
@@ -45,8 +45,8 @@ $('#feitoModalForm').submit(function(e) {
    	console.log();
 	updateFeito(tarefaId, tarefaFeita);
     $('#feitoModal').modal('hide');  
-});
-
+});*/
+/*
 $('#deleteTask').click(function() {
 	        const tarefaIdDelete = $('#taskId').data('id')
 			const descricaoDelete = $('#descricaomodal').val();
@@ -69,3 +69,4 @@ $('#deleteModalForm').submit(function(e) {
 	deleteTarefa(tarefaIdDelete, tarefaDelete);
     $('#deleteModal').modal('hide');  
 });
+*/

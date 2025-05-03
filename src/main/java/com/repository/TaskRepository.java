@@ -32,4 +32,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	List<Task> findAllByUserAndDoneTrueAndCompletionDateAfter(User user, LocalDateTime sevenDaysAgo);
 
+	Page<Task> findByUserIdAndCategory_Name(Long id, String category, Pageable pageable);
+
 }

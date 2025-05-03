@@ -44,8 +44,10 @@ public class TaskController {
 	@Operation(summary = "Get tasks accepting a filter")
     @GetMapping
 	public ResponseEntity<Page<TaskResponseDTO>> getTasks(
-			@RequestParam(value = "withoutProjects", required = false) Boolean withoutProject, Pageable pageable) {
-		return ResponseEntity.ok(taskService.getFilteredTasks(withoutProject, pageable));
+			@RequestParam(value = "withoutProjects", required = false) Boolean withoutProject,
+			@RequestParam(value = "category", required = false) String category,
+			Pageable pageable) {
+		return ResponseEntity.ok(taskService.getFilteredTasks(withoutProject, category, pageable));
 	}
     
     @Operation(summary = "Get task by its ID")
