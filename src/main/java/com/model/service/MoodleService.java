@@ -7,7 +7,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -108,35 +110,41 @@ public class MoodleService {
     }
     
 
-    @Scheduled(fixedRate = 3600000)
-	public List<TaskResponseDTO> syncPendingTasksFromMoodle(User user) {
-		List<CourseDTO> courses = this.getCoursesForUser(user.getMoodleUserId());
+    public Page<TaskResponseDTO> syncPendingTasksFromMoodle(User user, Pageable pageable) {
+        List<CourseDTO> courses = this.getCoursesForUser(user.getMoodleUserId());
 
-		return courses.stream().flatMap(course -> {
-			List<ActivityStatusDTO> activities = this.getActivities(user.getMoodleUserId(), course.getId());
+        List<TaskResponseDTO> allTasks = courses.stream().flatMap(course -> {
+            List<ActivityStatusDTO> activities = this.getActivities(user.getMoodleUserId(), course.getId());
 
-			return activities.stream().map(activity -> {
-				Optional<Task> existingTaskOpt = taskService.findByUserAndMoodleInfo(user.getId(), course.getId(),
-						activity.getCmid());
+            return activities.stream().map(activity -> {
+                Optional<Task> existingTaskOpt = taskService.findByUserAndMoodleInfo(user.getId(), course.getId(),
+                        activity.getCmid());
 
-				boolean isCompletedInMoodle = activity.getState() == 1;
+                boolean isCompletedInMoodle = activity.getState() == 1;
 
-				if (existingTaskOpt.isPresent()) {
-					Task task = existingTaskOpt.get();
+                if (existingTaskOpt.isPresent()) {
+                    Task task = existingTaskOpt.get();
 
-					if (isCompletedInMoodle && !Boolean.TRUE.equals(task.getDone())) {
-						taskService.markAsCompleted(task.getId());
-					}
+                    if (isCompletedInMoodle && !Boolean.TRUE.equals(task.getDone())) {
+                        taskService.markAsCompleted(task.getId());
+                    }
 
-					return taskService.toDTO(task);
+                    return taskService.toDTO(task);
 
-				} else if (!isCompletedInMoodle) {
-					return taskService.createTaskFromMoodleActivity(user, course, activity);
-				}
+                } else if (!isCompletedInMoodle) {
+                    return taskService.createTaskFromMoodleActivity(user, course, activity);
+                }
 
-				return null;
-			}).filter(Objects::nonNull);
-		}).toList();
-	}
+                return null;
+            }).filter(Objects::nonNull);
+        }).toList();
+
+        int total = allTasks.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), total);
+        List<TaskResponseDTO> paginatedList = allTasks.subList(start, end);
+
+        return new PageImpl<>(paginatedList, pageable, total);
+    }
  
 }

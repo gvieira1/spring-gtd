@@ -1,38 +1,62 @@
 import { getCurrentCategoryFromURL } from '/scripts/helpers.js';
+import { checkAndNotifyUpcomingTasks } from './notifications.js';
+import { loadMoodleTasks, loadInboxTasks } from './task.js';
 
-export function setupSidebarNavigation(loadTasksCallback) {
-	$('.clickable-icon').on('click', function(e) {
+const taskLoaders = {
+	'categoria': loadInboxTasks,
+	'moodle': loadMoodleTasks
+};
+
+export function setupSidebarNavigation() {
+	$('.clickable-icon').on('click', function (e) {
 		e.preventDefault();
 
 		const targetPath = $(this).data('href');
-		const categoryName = $(this).data('categoria');
+		const categoryName = $(this).data('categoria') || null;
+		const source = $(this).data('source') || 'categoria';
 
 		if (!targetPath) return;
 
-		history.pushState({ category: categoryName }, '', targetPath);
+		history.pushState({ category: categoryName, source }, '', targetPath);
 
-		loadTasksCallback(categoryName);
+		const loaderFn = taskLoaders[source];
+		if (loaderFn) loaderFn(categoryName);
 	});
 
-	window.onpopstate = function(event) {
-		const categoryName = event.state?.category || null;
-		loadTasksCallback(categoryName);
+	window.onpopstate = function (event) {
+		const state = event.state || {};
+		const categoryName = state.category || null;
+		const source = state.source || 'categoria';
+
+		const loaderFn = taskLoaders[source];
+		if (loaderFn) loaderFn(categoryName);
 	};
 
 	if (location.pathname === '/pages/dashboard.html') {
+		checkAndNotifyUpcomingTasks();
+
 		const defaultPath = '/categorias/caixa-de-entrada';
 		const defaultCategory = 'Caixa de Entrada';
 
-		history.pushState({ category: defaultCategory }, '', defaultPath);
-		loadTasksCallback(defaultCategory);
+		history.pushState({ category: defaultCategory, source: 'categoria' }, '', defaultPath);
+		loadInboxTasks(defaultCategory);
 	} else {
-		const category = getCurrentCategoryFromURL();
-		loadTasksCallback(category);
+		const category = getCurrentCategoryFromURL() || 'Caixa de Entrada';
+		const source = location.pathname.includes('moodle') ? 'moodle' : 'categoria';
+
+		const loaderFn = taskLoaders[source];
+		if (loaderFn) loaderFn(category);
 	}
 }
 
+let cachedTasks = null;
 
 export function loadAllTasksForSidebarCount() {
+	
+	if (cachedTasks) {
+	    updateTaskCountsByCategory(cachedTasks);
+	  }
+	  
   $.ajax({
     url: '/api/tasks',
     method: 'GET',
@@ -47,9 +71,7 @@ export function loadAllTasksForSidebarCount() {
   });
 }
 
-
 function updateTaskCountsByCategory(tasks) {
-
 	const counts = {};
 
 	tasks.forEach(task => {
@@ -61,14 +83,19 @@ function updateTaskCountsByCategory(tasks) {
 
 	$('.task-count').each(function() {
 		const category = $(this).data('category');
-		const count = counts[category];
+		const newCount = counts[category] || 0;
+		const currentCount = parseInt($(this).text(), 10);
 
-		if (count > 0) {
-			$(this).text(`${count}`).show();
-		} else {
+		if (newCount === 0) {
 			$(this).hide();
+		} else {
+			if (currentCount !== newCount) {
+				$(this).text(newCount);
+			}
+			$(this).show();
 		}
 	});
 }
+
 
 

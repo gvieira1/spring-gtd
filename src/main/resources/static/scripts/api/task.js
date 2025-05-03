@@ -1,64 +1,93 @@
 import { loadSelectOptions } from './estimatedTimes.js';
-import { getCurrentCategoryFromURL } from '/scripts/helpers.js';
+import { getCurrentCategoryFromURL, formatDateFromIso } from '/scripts/helpers.js';
 import { loadAllTasksForSidebarCount } from './sidebar.js'; 
 
+function fetchTasksByCategory(category = null) {
+	const queryParam = category ? `?category=${encodeURIComponent(category)}` : '';
+	const url = `/api/tasks${queryParam}`;
+
+	return $.ajax({
+		url: url,
+		method: 'GET',
+		dataType: 'json'
+	});
+}
+
 export function loadInboxTasks(category = null) {
-	
-		$('#taskList').empty();
-		
-		const title = category || "Entrada"; 
-		$('#categoryTitle').text(title);
-		
-		const queryParam = category ? `?category=${encodeURIComponent(category)}` : '';
-		const url = `/api/tasks${queryParam}`;
-		
-		$.ajax({
-			url: url,
-			method: 'GET',
-			dataType: 'json',
-			success: function(response) {
-				console.log(response);
-				const tasks = response.content;
-				const pendingTasks = tasks.filter(task => !task.done);
+	const title = category || "Entrada";
+	$('#categoryTitle').text(title);
 
-				
-				if (pendingTasks.length === 0) {
-				        $('#taskList').html('<div class="alert alert-light ">Sem tarefas nesta categoria. Tudo tranquilo por aqui! </div>');
-				        return;
-				      }
-
-				pendingTasks.forEach(task => {
-						const taskCard = $(`
-	
-            <div class="task-card d-flex justify-content-between align-items-center mb-2" 
-                data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
-              <div>
-                <input type="checkbox" class="form-check-input me-2 " data-id="${task.id}"  data-bs-toggle="modal" data-bs-target="#doneModal"/> ${task.description}
-				
-              </div>
-              <span class="badge bg-light text-dark">${task.category.name}</span>
-            </div>
-          `);
-
-						taskCard.on('click', function() {
-							const tarefaId = $(this).data('id');
-							openEditModal(tarefaId);
-						});
-
-						$('#taskList').append(taskCard);
-					
-				});
-
-				$('#doneModal').on('hidden.bs.modal', function () {
-						     $('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
-						});
-
-			},
-			error: function() {
-				$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas.//</div>');
-			}
+	fetchTasksByCategory(category)
+		.then(response => {
+			console.log(response);
+			renderTaskList(response.content);
+		})
+		.catch(() => {
+			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas.</div>');
 		});
 }
+
+function fetchTasksFromMoodle() {
+	const url = `/api/moodle/sync-tasks`;
+
+	return $.ajax({
+		url: url,
+		method: 'GET',
+		dataType: 'json'
+	});
+}
+
+export function loadMoodleTasks() {
+	$('#categoryTitle').text('Moodle');
+
+	fetchTasksFromMoodle()
+		.then(response => {
+			console.log(response);
+			renderTaskList(response.content);
+		})
+		.catch(() => {
+			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas do Moodle.</div>');
+		});
+}
+
+
+
+function renderTaskList(tasks, containerSelector = '#taskList') {
+	const $container = $(containerSelector);
+	$container.empty();
+
+	const pendingTasks = tasks.filter(task => !task.done);
+
+	if (pendingTasks.length === 0) {
+		$container.html('<div class="alert alert-light">Sem tarefas nesta categoria. Tudo tranquilo por aqui!</div>');
+		return;
+	}
+
+	pendingTasks.forEach(task => {
+		const taskCard = $(`
+			<div class="task-card d-flex justify-content-between align-items-center mb-2" 
+				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
+				<div>
+					<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal"/> ${task.description}
+				</div>
+				<span class="badge bg-light text-dark">${task.category.name}</span>
+			</div>
+		`);
+
+		taskCard.on('click', function () {
+			const tarefaId = $(this).data('id');
+			openEditModal(tarefaId);
+		});
+
+		$container.append(taskCard);
+	});
+
+	$('#doneModal').on('hidden.bs.modal', function () {
+		$('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
+	});
+}
+
+
 
 function openEditModal(tarefaId) {
   $('#taskForm')[0].reset();
@@ -69,7 +98,9 @@ function openEditModal(tarefaId) {
     $('#formSwitch2').prop('checked', task.delegated === true);
 
 	if (task.deadline) {
-	  $('#deadlinemodal').val(task.deadline);
+	const isoFormat = formatDateFromIso(task.deadline);
+	$('#deadlinemodal').val(isoFormat);
+	 
 	} 
 
     if (task.subject) {

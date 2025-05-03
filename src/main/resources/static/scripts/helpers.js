@@ -26,7 +26,7 @@ export function getCurrentCategoryFromURL() {
 	const pathToCategory = {
 		'caixa-de-entrada': 'Caixa de Entrada',
 		'quando-puder': 'Quando Puder',
-		'agendado': 'Agendados',
+		'agendado': 'Agendado',
 		'projeto': 'Projeto',
 		'aguardando-resposta': 'Aguardando Resposta',
 		'arquivo': 'Arquivo'
@@ -40,4 +40,23 @@ export function getCurrentCategoryFromURL() {
   }
 
   return null;
+}
+
+export function createCalendar(){
+	$('#sandbox-container .input-group.date').datepicker({
+	    format: "dd/mm/yyyy",
+		language: "pt-BR",
+		autoclose: true,
+		clearBtn: true
+	});
+}
+
+export function formatDateFromIso(isoDateStr) {
+    const [year, month, day] = isoDateStr.split('-');
+    return `${day}/${month}/${year}`;
+}
+
+export function formatDateToIso(brDateStr) {
+	const [day, month, year] = brDateStr.split('/');
+	return `${year}-${month}-${day}`;
 }

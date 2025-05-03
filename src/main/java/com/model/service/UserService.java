@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.exception.UserNotFoundException;
+import com.model.dto.NotificationPreferenceDTO;
 import com.model.dto.RegisterDTO;
 import com.model.entity.User;
 import com.repository.UserRepository;
@@ -66,5 +67,11 @@ public class UserService {
 		User user = this.getAuthenticatedUser();
 		user.setNotificationDaysBeforeDefault(notificationDaysBeforeDefault);
         userRepository.save(user);	
+	}
+	
+	public NotificationPreferenceDTO getNotificationDaysBefore() {
+		User user = this.getAuthenticatedUser();
+		NotificationPreferenceDTO dto = new NotificationPreferenceDTO(user.getNotificationDaysBeforeDefault());
+		return dto;
 	}
 }

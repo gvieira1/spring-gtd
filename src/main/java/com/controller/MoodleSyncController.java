@@ -1,9 +1,9 @@
 package com.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +35,7 @@ public class MoodleSyncController {
                     @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
     })
 	@PostMapping("/sync")
-    public ResponseEntity<String> syncUserWithMoodle(Authentication auth) {
+    public ResponseEntity<String> syncUserWithMoodle() {
         User user = userService.getAuthenticatedUser();
         Long moodleId = moodleService.findMoodleUserIdByEmail(user.getEmail()).block();
         userService.saveMoodleUser(user, moodleId);
@@ -46,9 +46,9 @@ public class MoodleSyncController {
     @ApiResponses(value = {
                     @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
     })
-	@PostMapping("/sync-tasks")
-    public ResponseEntity<List<TaskResponseDTO>> syncTasks(Authentication auth) {
+	@GetMapping("/sync-tasks")
+    public ResponseEntity<Page<TaskResponseDTO>> syncTasks(Pageable pageable) {
 		User user = userService.getAuthenticatedUser();
-        return ResponseEntity.ok(moodleService.syncPendingTasksFromMoodle(user));
+        return ResponseEntity.ok(moodleService.syncPendingTasksFromMoodle(user, pageable));
     }
 }

@@ -3,6 +3,7 @@
 
 import { deleteTask, updateDone, updateTask, createTask } from './api/task.js';
 import { createProject } from './api/project.js';
+import { formatDateToIso } from './helpers.js';
 
 export function initDeleteModalHandlers() {
 	$('#deleteTaskBtn').on('click', function() {
@@ -58,7 +59,8 @@ export function initUpdateForm(){
 
 	    const taskId = $('#taskModal').data('id');
 		let deadlineValue = $('#deadlinemodal').val();
-		deadlineValue = deadlineValue === "" ? null : deadlineValue;
+		deadlineValue = deadlineValue === "" ? null : formatDateToIso(deadlineValue);
+
 		 
 	    const updatedTask = {
 	        id: taskId,

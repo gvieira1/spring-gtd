@@ -1,6 +1,7 @@
 package com.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +35,15 @@ public class UserController {
     	userService.setNotificationDaysBefore(preferenceDTO.notificationDaysBeforeDefault());
     	return ResponseEntity.noContent().build();
     }
+    
+    @Operation(summary = "Return user notification preference")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
+    @GetMapping("/notification-preference")
+    public ResponseEntity<NotificationPreferenceDTO> getNotificationPreference() {
+    	return ResponseEntity.ok(userService.getNotificationDaysBefore());
+    }
+    
+    
 }
