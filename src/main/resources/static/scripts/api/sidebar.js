@@ -1,14 +1,18 @@
 import { getCurrentCategoryFromURL } from '/scripts/helpers.js';
 import { checkAndNotifyUpcomingTasks } from './notifications.js';
-import { loadMoodleTasks, loadInboxTasks } from './task.js';
+import { loadMoodleTasks, loadInboxTasks, loadDoneTasks, fetchPendingTasks} from './task.js';
+import { fetchActiveProjects } from './project.js';
 
 const taskLoaders = {
 	'categoria': loadInboxTasks,
-	'moodle': loadMoodleTasks
+	'moodle': loadMoodleTasks,
+	'concluidas': loadDoneTasks,
+	'pendentes': fetchPendingTasks,
+	'projetos': fetchActiveProjects
 };
 
 export function setupSidebarNavigation() {
-	$('.clickable-icon').on('click', function (e) {
+	$('.history-btn').on('click', function (e) {
 		e.preventDefault();
 
 		const targetPath = $(this).data('href');
@@ -42,7 +46,19 @@ export function setupSidebarNavigation() {
 		loadInboxTasks(defaultCategory);
 	} else {
 		const category = getCurrentCategoryFromURL() || 'Caixa de Entrada';
-		const source = location.pathname.includes('moodle') ? 'moodle' : 'categoria';
+		let source = null;
+		
+		if (location.pathname.includes('moodle')) {
+			source = 'moodle';
+		} else if (location.pathname.includes('concluidas')) {
+			source = 'concluidas';
+		} else if (location.pathname.includes('pendentes')) {
+		    source = 'pendentes';
+		} else if (location.pathname.includes('projetos')) {
+			source = 'projetos';
+		} else {
+			source = 'categoria';
+		}
 
 		const loaderFn = taskLoaders[source];
 		if (loaderFn) loaderFn(category);

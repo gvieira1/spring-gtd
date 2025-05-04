@@ -4,7 +4,7 @@ import { initDeleteModalHandlers, initDoneModalForm, initUpdateForm, initTaskOrP
 import {  handleButtonState, createCalendar } from './helpers.js';
 import { setupSidebarNavigation, loadAllTasksForSidebarCount } from './api/sidebar.js'; 
 import {  initNotificationSettings } from './api/notifications.js';
-import { loadMoodleTasks } from './api/task.js';
+import { loadMoodleTasks} from './api/task.js';
 
 
 $(document).ready(function() {

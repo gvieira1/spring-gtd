@@ -22,36 +22,40 @@
                 <h5><i class="bi bi-mortarboard-fill"></i>  <a class="text-decoration-none text-dark" href="/pages/dashboard.html">AcademicGTD</a></h5>
                 <hr />
                 <p class="fw-bold" >Caixa de Entrada</p>
-                <p class="clickable-icon" data-href="/categorias/caixa-de-entrada" data-categoria="Caixa de Entrada"><i class="bi bi-inbox-fill "></i> Capture 
+                <p class="clickable-icon history-btn" data-href="/categorias/caixa-de-entrada" data-categoria="Caixa de Entrada"><i class="bi bi-inbox-fill "></i> Capture 
                 <span class="task-count text-muted ms-2" data-category="Caixa de Entrada" style="display: none;"></span>
                 </p>
                 <p class="fw-bold mt-3 ">Categorias</p>
-                <p class="clickable-icon" data-href="/categorias/quando-puder" data-categoria="Quando Puder"><i class="bi bi-arrow-right-circle "></i> Quando Puder
+                <p class="clickable-icon history-btn" data-href="/categorias/quando-puder" data-categoria="Quando Puder"><i class="bi bi-arrow-right-circle "></i> Quando Puder
                 <span class="task-count text-muted ms-2" data-category="Quando Puder" style="display: none;"></span>
                 </p>
-                <p class="clickable-icon" data-href="/categorias/agendado" data-categoria="Agendado"><i class="bi bi-calendar-event "></i> Agendados
+                <p class="clickable-icon history-btn" data-href="/categorias/agendado" data-categoria="Agendado"><i class="bi bi-calendar-event "></i> Agendados
                  <span class="task-count text-muted ms-2" data-category="Agendado" style="display: none;"></span>
                 </p>
-                <p class="clickable-icon" data-href="/categorias/projeto" data-categoria="Projeto"><i class="bi bi-kanban "></i> Projetos
+                <p class="clickable-icon history-btn" data-href="/categorias/projeto" data-categoria="Projeto"><i class="bi bi-kanban "></i> De Projetos
                  <span class="task-count text-muted ms-2" data-category="Projeto" style="display: none;"></span>
                 </p>
-                <p class="clickable-icon" data-href="/categorias/aguardando-resposta" data-categoria="Aguardando Resposta"><i class="bi bi-hourglass-split "></i> Aguardando
+                <p class="clickable-icon history-btn" data-href="/categorias/aguardando-resposta" data-categoria="Aguardando Resposta"><i class="bi bi-hourglass-split "></i> Aguardando
                 <span class="task-count text-muted ms-2 " data-category="Aguardando Resposta" style="display: none;"></span>
                 </p>
-                <p class="clickable-icon" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
+                <p class="clickable-icon history-btn" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
                  <span class="task-count text-muted ms-2" data-category="Arquivo" style="display: none;"></span>
                  </p>
-                <p class="clickable-icon" data-href="/categorias/moodle" data-source="moodle" ><img width="18" height="18" src="https://img.icons8.com/material/18/moodle.png" alt="moodle" /> Moodle</p>
-
+                 <p class="fw-bold mt-3 history-btn">Outros</p>
+                <p class="clickable-icon history-btn" data-href="/categorias/moodle" data-source="moodle" ><img width="18" height="18" src="https://img.icons8.com/material/18/moodle.png" alt="moodle" /> Do Moodle</p>
+				 
+				<p class="clickable-icon history-btn" data-href="/categorias/concluidas" data-source="concluidas"><i class="bi bi-check-circle"></i> Concluídas
+                 
+                 </p>
             </div>
 
             <!-- Main content -->
             <div class="col-md-10 ms-auto">
                 <nav class="d-flex justify-content-between p-3 bg-white border-bottom w-100">
                     <div>
-                        <a class="me-2 text-decoration-none link-bg" href="#">Dashboard</a>
-                        <a class="me-2 text-decoration-none link-bg" href="#">Tarefas</a>
-                        <a class="me-2 text-decoration-none  link-bg" href="#">Projetos</a>
+                        <a class="me-2 text-decoration-none link-bg" >Dashboard</a>
+                        <a class="me-2 text-decoration-none link-bg history-btn" data-href="/categorias/pendentes" data-source="pendentes">Tarefas Pendentes</a>
+                        <a class="me-2 text-decoration-none  link-bg history-btn" data-href="/projetos" data-source="projetos">Projetos Ativos</a>
                         <a class="text-decoration-none  link-bg" href="#">Calendário</a>
 
                     </div>
@@ -281,6 +285,7 @@
             </div>
         </div>
     </div>
+
 
 
 

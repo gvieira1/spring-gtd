@@ -2,6 +2,24 @@ import { loadSelectOptions } from './estimatedTimes.js';
 import { getCurrentCategoryFromURL, formatDateFromIso } from '/scripts/helpers.js';
 import { loadAllTasksForSidebarCount } from './sidebar.js'; 
 
+
+export function fetchPendingTasks(){
+	$.ajax({
+			url: `/api/tasks`,
+			method: 'GET',
+			dataType: 'json',
+			success: function (response) {
+				$('#categoryTitle').text("Tarefas Pendentes");			
+				renderTaskList(response.content);		
+			},
+			error: function() {
+			   $('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas pendentes.</div>');
+		}
+			
+		});
+}
+
+
 function fetchTasksByCategory(category = null) {
 	const queryParam = category ? `?category=${encodeURIComponent(category)}` : '';
 	const url = `/api/tasks${queryParam}`;
@@ -50,6 +68,28 @@ export function loadMoodleTasks() {
 		});
 }
 
+function fetchTasksDone() {
+	const url = `/api/tasks`;
+
+	return $.ajax({
+		url: url,
+		method: 'GET',
+		dataType: 'json'
+	});
+}
+
+export function loadDoneTasks() {
+	$('#categoryTitle').text('Concluídas');
+
+	fetchTasksDone()
+		.then(response => {
+			console.log(response);
+			renderDoneTasks(response.content);
+		})
+		.catch(() => {
+			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas concluídas.</div>');
+		});
+}
 
 
 function renderTaskList(tasks, containerSelector = '#taskList') {
@@ -64,13 +104,17 @@ function renderTaskList(tasks, containerSelector = '#taskList') {
 	}
 
 	pendingTasks.forEach(task => {
+		const isScheduled = task.category?.name === 'Agendado';
+
+		const badge = isScheduled ? `<span class="badge bg-light text-dark">${formatDateFromIso(task.deadline)}</span>`: `<span class="badge bg-light text-dark">${task.category.name}</span>`;
+					
 		const taskCard = $(`
 			<div class="task-card d-flex justify-content-between align-items-center mb-2" 
 				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
 				<div>
 					<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal"/> ${task.description}
 				</div>
-				<span class="badge bg-light text-dark">${task.category.name}</span>
+				${badge}
 			</div>
 		`);
 
@@ -87,6 +131,42 @@ function renderTaskList(tasks, containerSelector = '#taskList') {
 	});
 }
 
+function renderDoneTasks(tasks, containerSelector = '#taskList') {
+	const $container = $(containerSelector);
+	$container.empty();
+
+	const completedTasks = tasks.filter(task => task.done);
+
+	if (completedTasks.length === 0) {
+		$container.html('<div class="alert alert-light">Sem tarefas nesta categoria. Aproveite para criar a primeira!</div>');
+		return;
+	}
+
+	completedTasks.forEach(task => {
+		const isScheduled = task.category?.name === 'Agendado';
+
+		const badge = isScheduled ? `<span class="badge bg-light text-dark">${formatDateFromIso(task.deadline)}</span>`: `<span class="badge bg-light text-dark">${task.category.name}</span>`;
+					
+		const taskCard = $(`
+			<div class="task-card d-flex justify-content-between align-items-center mb-2" 
+				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
+				<div>
+					${task.description}
+				</div>
+				${badge}
+			</div>
+		`);
+
+		taskCard.on('click', function () {
+			const tarefaId = $(this).data('id');
+			openEditModal(tarefaId);
+		});
+
+		$container.append(taskCard);
+	});
+
+
+}
 
 
 function openEditModal(tarefaId) {
