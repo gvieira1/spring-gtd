@@ -1,5 +1,5 @@
 import { loadSelectOptions } from './estimatedTimes.js';
-import { getCurrentCategoryFromURL, formatDateFromIso } from '/scripts/helpers.js';
+import { formatDateFromIso } from '/scripts/helpers.js';
 import { loadAllTasksForSidebarCount, setupSidebarNavigation } from './sidebar.js'; 
 import { loadProjectOptions } from './project.js';
 
@@ -11,7 +11,7 @@ export function fetchPendingTasks(){
 			dataType: 'json',
 			success: function (response) {
 				$('#categoryTitle').text("Tarefas Pendentes");			
-				renderTaskList(response.content);		
+				renderTasks({ tasks: response.content, showDone: false, showToggle: true });	
 			},
 			error: function() {
 			   $('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas pendentes.</div>');
@@ -39,7 +39,7 @@ export function loadInboxTasks(category = null) {
 	fetchTasksByCategory(category)
 		.then(response => {
 			console.log(response);
-			renderTaskList(response.content);
+			renderTasks({ tasks: response.content, showDone: false, showToggle: true });
 		})
 		.catch(() => {
 			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas.</div>');
@@ -62,7 +62,9 @@ export function loadMoodleTasks() {
 	fetchTasksFromMoodle()
 		.then(response => {
 			console.log(response);
-			renderTaskList(response.content);
+			renderTasks({ tasks: response.content, showDone: false, showToggle: true });
+
+			
 		})
 		.catch(() => {
 			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas do Moodle.</div>');
@@ -85,7 +87,7 @@ export function loadDoneTasks() {
 	fetchTasksDone()
 		.then(response => {
 			console.log(response);
-			renderDoneTasks(response.content);
+			renderTasks({ tasks: response.content, showDone: true, showToggle: false });
 		})
 		.catch(() => {
 			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas concluídas.</div>');
@@ -93,29 +95,49 @@ export function loadDoneTasks() {
 }
 
 
-export function renderTaskList(tasks, containerSelector = '#taskList') {
+export function renderTasks({ tasks, containerSelector = '#taskList', showDone = false, showToggle = true }) {
 	const $container = $(containerSelector);
 	$container.empty();
 
-	const pendingTasks = tasks.filter(task => !task.done);
+	const filteredTasks = typeof showDone === 'boolean'
+		? tasks.filter(task => task.done === showDone)
+		: tasks;
 
-	if (pendingTasks.length === 0) {
-		$container.html('<div class="alert alert-light">Sem tarefas nesta categoria. Tudo tranquilo por aqui!</div>');
+
+	if (filteredTasks.length === 0) {
+		const message = showDone 
+			? 'Sem tarefas concluídas nesta categoria. Tudo feito!' 
+			: 'Sem tarefas nesta categoria. Tudo tranquilo por aqui!';
+		$container.html(`<div class="alert alert-light">${message}</div>`);
 		return;
 	}
 
-	pendingTasks.forEach(task => {
+	filteredTasks.forEach(task => {
 		const isScheduled = task.category?.name === 'Agendado';
+		
+		const statusClass = task.done ? 'text-muted text-decoration-line-through' : '';
+		
+		const isProject = task.project != null ? `<span class="badge bg-light text-dark fs-7">${'Projeto'}</span>` : '';
 
-		const badge = isScheduled ? `<span class="badge bg-light text-dark">${formatDateFromIso(task.deadline)}</span>`: `<span class="badge bg-light text-dark">${task.category.name}</span>`;
-					
+		const badge = isScheduled 
+			? `<span class="badge bg-light text-dark ">${formatDateFromIso(task.deadline)}</span>` 
+			: `<span class="badge bg-light text-dark ">${task.category.name}</span>`;
+
+		const checkbox = showToggle
+			? `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''}/>`
+			: '';
+
 		const taskCard = $(`
-			<div class="task-card d-flex justify-content-between align-items-center mb-2" 
+			<div class="task-card d-flex justify-content-between align-items-center mb-2 ${statusClass}" 
 				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
 				<div>
-					<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal"/> ${task.description}
+					${checkbox}${task.description}
 				</div>
-				${badge}
+				<div class="d-flex gap-1">
+				  ${isProject}
+				  ${badge}
+				</div>
+
 			</div>
 		`);
 
@@ -127,47 +149,13 @@ export function renderTaskList(tasks, containerSelector = '#taskList') {
 		$container.append(taskCard);
 	});
 
-	$('#doneModal').on('hidden.bs.modal', function () {
-		$('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
-	});
-}
-
-function renderDoneTasks(tasks, containerSelector = '#taskList') {
-	const $container = $(containerSelector);
-	$container.empty();
-
-	const completedTasks = tasks.filter(task => task.done);
-
-	if (completedTasks.length === 0) {
-		$container.html('<div class="alert alert-light">Sem tarefas nesta categoria. Aproveite para criar a primeira!</div>');
-		return;
-	}
-
-	completedTasks.forEach(task => {
-		const isScheduled = task.category?.name === 'Agendado';
-
-		const badge = isScheduled ? `<span class="badge bg-light text-dark">${formatDateFromIso(task.deadline)}</span>`: `<span class="badge bg-light text-dark">${task.category.name}</span>`;
-					
-		const taskCard = $(`
-			<div class="task-card d-flex justify-content-between align-items-center mb-2" 
-				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
-				<div>
-					${task.description}
-				</div>
-				${badge}
-			</div>
-		`);
-
-		taskCard.on('click', function () {
-			const tarefaId = $(this).data('id');
-			openEditModal(tarefaId);
+	if (showToggle) {
+		$('#doneModal').on('hidden.bs.modal', function () {
+			$('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
 		});
-
-		$container.append(taskCard);
-	});
-
-
+	}
 }
+
 
 
 function openEditModal(tarefaId) {
@@ -215,8 +203,9 @@ export function deleteTask(taskId) {
         type: 'DELETE',
         success: function() {   
             console.log('Tarefa excluída com sucesso.');
-			setupSidebarNavigation();
 			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
+		
         },
         error: function(xhr, status, error) {
             console.error('Erro ao excluir a tarefa:', error, xhr, status);
@@ -235,6 +224,7 @@ export function updateDone(taskId) {
 			console.log('Tarefa marcada como feita:', taskId);
 			loadAllTasksForSidebarCount();
 			setupSidebarNavigation();
+			showCategoryToast("Tarefa Concluída!")
 			
 		},
 		error: function(xhr, status, error) {
@@ -284,8 +274,9 @@ export function createTask(text) {
 		data: JSON.stringify({ description: text }),
 		success: function() {
 			console.log('Tarefa criada');
-			loadAllTasksForSidebarCount();
+
 			setupSidebarNavigation();
+			loadAllTasksForSidebarCount();
 			
 		},
 		error: function() {

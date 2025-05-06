@@ -3,6 +3,7 @@ import java.security.Principal;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -36,13 +37,13 @@ public class ProjectController {
 
 	@Operation(summary = "Get all projects")
 	@GetMapping
-	public ResponseEntity<Page<ProjectResponseDTO>> GetAllProjects(Pageable pageable) {
+	public ResponseEntity<Page<ProjectResponseDTO>> GetAllProjects( @PageableDefault(sort = {"done"})  Pageable pageable) {
 		return ResponseEntity.ok(projectService.getAllProjects(pageable));
 	}
 	
 	@Operation(summary = "List all tasks by their Project")
 	@GetMapping("/{id}/tasks")
-	public ResponseEntity<Page<TaskResponseDTO>> getTasksByProject(@PathVariable Long id, Pageable pageable) {
+	public ResponseEntity<Page<TaskResponseDTO>> getTasksByProject(@PathVariable Long id, @PageableDefault(sort = {"done"})  Pageable pageable) {
 		return ResponseEntity.ok(projectService.getTasksByProject(id, pageable));
 	}
 

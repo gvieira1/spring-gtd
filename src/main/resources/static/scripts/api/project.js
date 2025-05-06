@@ -1,5 +1,5 @@
 
-import { renderTaskList } from './task.js';
+import { renderTasks } from './task.js';
 import { loadAllTasksForSidebarCount } from './sidebar.js'; 
 
 export function createProject(text) {
@@ -67,7 +67,7 @@ export function fetchActiveProjects() {
 		method: 'GET',
 		dataType: 'json',
 		success: function(response) {
-			$('#categoryTitle').text("Projetos Ativos");
+			$('#categoryTitle').text("Projetos");
 			renderActiveProjects(response.content);
 		},
 		error: function() {
@@ -77,26 +77,47 @@ export function fetchActiveProjects() {
 	});
 }
 
-
-
 function renderActiveProjects(projects, containerSelector = '#taskList') {
 	const $container = $(containerSelector);
+	setupProjectListHeader($container, projects);
+	renderProjectCards(projects, $container);
+}
+
+
+function setupProjectListHeader($container, projects) {
 	$container.empty();
 
-	const pendingProjects = projects.filter(project => !project.done);
+	const header = $(`
+		<div class="form-check form-switch mb-3">
+			<input class="form-check-input" type="checkbox" id="showCompletedProjects">
+			<label class="form-check-label" for="showCompletedProjects">Exibir projetos concluídos</label>
+		</div>
+	`);
 
-	if (pendingProjects.length === 0) {
-		$container.html('<div class="alert alert-light">Sem projetos por enquanto. Aproveite!</div>');
+	$container.append(header);
+
+	$container.on('change', '#showCompletedProjects', function () {
+		renderProjectCards(projects, $container);
+	});
+}
+
+function renderProjectCards(projects, $container) {
+	$container.find('.project-data').remove();
+
+	const showCompleted = $('#showCompletedProjects').is(':checked');
+	const visibleProjects = showCompleted ? projects : projects.filter(p => !p.done);
+
+	if (visibleProjects.length === 0) {
+		$container.append('<div class="alert alert-light project-data">Sem projetos por enquanto. Aproveite!</div>');
 		return;
 	}
 
-	pendingProjects.forEach(project => {
+	visibleProjects.forEach(project => {
+		const statusClass = project.done ? 'text-muted text-decoration-line-through' : '';
 		const projectCard = $(`
-			<div class="task-card d-flex justify-content-between align-items-center mb-2 project-data" 
+			<div class="task-card d-flex justify-content-between align-items-center mb-2 project-data ${statusClass}" 
 				data-bs-toggle="modal" data-bs-target="#projectModal" data-id="${project.id}" data-description="${project.description}">
-				<div>
-					 ${project.description}
-				</div>
+				<div>${project.description}</div>
 			</div>
 		`);
 
@@ -110,8 +131,10 @@ function renderActiveProjects(projects, containerSelector = '#taskList') {
 
 		$container.append(projectCard);
 	});
-
 }
+
+
+
 
 export function openProjectModal(projectId) {
 
@@ -120,7 +143,13 @@ export function openProjectModal(projectId) {
 				method: 'GET',
 				dataType: 'json',
 				success: function (response) {	
-					renderTaskList(response.content, '#projectModalBody');		
+					window.currentProjectTasks = response.content;
+					renderTasks({
+						tasks: response.content,
+						containerSelector: '#projectModalBody',
+						showDone: null,
+						showToggle: true
+					});
 				},
 				error: function() {
 				   $('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas deste projeto.</div>');
@@ -130,6 +159,8 @@ export function openProjectModal(projectId) {
 	
 
 }
+
+
 
 
 export function loadProjectOptions(selectedId = null) {

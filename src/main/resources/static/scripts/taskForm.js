@@ -32,6 +32,24 @@ export function initDoneModalForm() {
 		const triggerElement = $(event.relatedTarget);
 		const taskId = triggerElement.data('id');
 		$(this).data('id', taskId);
+
+		const tasks = window.currentProjectTasks;
+		const isProjectContext = Array.isArray(tasks);
+
+		if (isProjectContext) {
+			const pendingTasks = tasks.filter(t => String(t.done) !== 'true' && t.id !== taskId);
+			const isLastPending = pendingTasks.length === 0;
+
+			if (isLastPending) {
+				$('#doneModalLabel').html(
+					`Finalizar a <strong>última tarefa</strong> do projeto?<br><br><small class="text-muted">Isso também marcará o projeto como concluído.</small><br>`
+				);
+			} else {
+				$('#doneModalLabel').text('Finalizar tarefa?');
+			}
+		} else {
+			$('#doneModalLabel').text('Finalizar tarefa?');
+		}
 	});
 
 	$('#doneModalForm').submit(function(e) {
@@ -43,6 +61,8 @@ export function initDoneModalForm() {
 		$('#doneModal').modal('hide');
 	});
 }
+
+
 
 export function initUpdateForm(){
 	

@@ -65,19 +65,16 @@ export function setupSidebarNavigation() {
 	}
 }
 
-let cachedTasks = null;
 
 export function loadAllTasksForSidebarCount() {
-	
-	if (cachedTasks) {
-	    updateTaskCountsByCategory(cachedTasks);
-	  }
+
 	  
   $.ajax({
-    url: '/api/tasks',
+    url: '/api/tasks?size=1000',
     method: 'GET',
     dataType: 'json',
     success: function(response) {
+		console.log('Tarefas carregadas:', response);
       const tasks = response.content || [];
       updateTaskCountsByCategory(tasks); 
     },
@@ -91,7 +88,7 @@ function updateTaskCountsByCategory(tasks) {
 	const counts = {};
 
 	tasks.forEach(task => {
-		if (!task.done && task.category?.name) {
+		if (!task.done && task.category.name) {
 			const cat = task.category.name;
 			counts[cat] = (counts[cat] || 0) + 1;
 		}

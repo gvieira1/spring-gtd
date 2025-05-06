@@ -36,7 +36,7 @@
                 <span class="task-count text-muted ms-2 " data-category="Aguardando Resposta" style="display: none;"></span>
                 </p>
                 <p class="clickable-icon history-btn" data-href="/projetos" data-source="projetos"><i class="bi bi-kanban "></i> Projetos
-                 <span class="task-count text-muted ms-2" data-category="Projeto" style="display: none;"></span>
+                 <span class="text-muted ms-2" data-category="Projeto" style="display: none;"></span>
                 </p>
                 <p class="clickable-icon history-btn" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
                  <span class="task-count text-muted ms-2" data-category="Arquivo" style="display: none;"></span>
@@ -78,6 +78,7 @@
 					
 					<h4 class="fw-bold" id="categoryTitle"></h4>
 						<div id="taskList" class="mt-4"></div>
+						
 				</div>
 
             </div>
@@ -372,6 +373,31 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Modal de Confirmação da Última Tarefa -->
+	<div class="modal" id="completeLastTaskModal" tabindex="-1"
+		aria-labelledby="completeLastTaskLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body text-center p-4">
+					<i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+					<h5 class="mb-3">
+						Esta é a última tarefa do projeto <strong class="text-primary"
+							id="projectToCompleteName"></strong>.
+					</h5>
+					<p class="text-muted">Concluir esta tarefa marcará o projeto
+						como finalizado. Deseja continuar?</p>
+					<div class="d-flex justify-content-center gap-3 mt-4">
+						<button type="button" class="btn btn-secondary"
+							data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-success"
+							id="confirmCompleteLastTask">Sim, concluir</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<!-- Toast alteração de categoria -->
 	<div class="toast-container position-fixed bottom-0 end-0 p-3"

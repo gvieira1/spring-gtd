@@ -11,7 +11,7 @@ import { loadMoodleTasks} from './api/task.js';
 $(document).ready(function() {
 	setupSidebarNavigation();
 	setInterval(loadMoodleTasks, 900000);
-	loadAllTasksForSidebarCount();
+
 	initProjectModal();
 	initializeSwitches();
 	initDeleteModalHandlers();
@@ -23,4 +23,5 @@ $(document).ready(function() {
 	handleButtonState('#newTask', '#addTaskBtn');
 	initNotificationSettings();
 	initDeleteProjectModalHandlers();
+	loadAllTasksForSidebarCount();
 });
