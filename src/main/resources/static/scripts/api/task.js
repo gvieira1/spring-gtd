@@ -1,6 +1,7 @@
 import { loadSelectOptions } from './estimatedTimes.js';
 import { getCurrentCategoryFromURL, formatDateFromIso } from '/scripts/helpers.js';
-import { loadAllTasksForSidebarCount } from './sidebar.js'; 
+import { loadAllTasksForSidebarCount, setupSidebarNavigation } from './sidebar.js'; 
+import { loadProjectOptions } from './project.js';
 
 
 export function fetchPendingTasks(){
@@ -92,7 +93,7 @@ export function loadDoneTasks() {
 }
 
 
-function renderTaskList(tasks, containerSelector = '#taskList') {
+export function renderTaskList(tasks, containerSelector = '#taskList') {
 	const $container = $(containerSelector);
 	$container.empty();
 
@@ -170,34 +171,40 @@ function renderDoneTasks(tasks, containerSelector = '#taskList') {
 
 
 function openEditModal(tarefaId) {
-  $('#taskForm')[0].reset();
+	$('#taskForm')[0].reset();
 
-  $.get(`/api/tasks/${tarefaId}`, function (task) {
-    $('#descriptionmodal').val(task.description);
-    $('#formSwitch1').prop('checked', task.priority === true);
-    $('#formSwitch2').prop('checked', task.delegated === true);
+	$.get(`/api/tasks/${tarefaId}`, function(task) {
+		$('#descriptionmodal').val(task.description);
+		$('#formSwitch1').prop('checked', task.priority === true);
+		$('#formSwitch2').prop('checked', task.delegated === true);
 
-	if (task.deadline) {
-	const isoFormat = formatDateFromIso(task.deadline);
-	$('#deadlinemodal').val(isoFormat);
-	 
-	} 
+		if (task.deadline) {
+			const isoFormat = formatDateFromIso(task.deadline);
+			$('#deadlinemodal').val(isoFormat);
+		}
+		if (task.subject) {
+			$('#subjectmodal').val(task.subject);
+		}
+		if (task.estimatedTime) {
+			loadSelectOptions(task.estimatedTime.id);
+		} else {
+			loadSelectOptions();
+		}
+		
+		if (task.project) {
+				loadProjectOptions(task.project.id);
+			} else {
+				loadProjectOptions();
+		}
+		
+		
 
-    if (task.subject) {
-      $('#subjectmodal').val(task.subject);
-    }
-	if (task.estimatedTime) {
-	  loadSelectOptions(task.estimatedTime.id);
-	} else {
-	  loadSelectOptions(); 
-	}
-
-
-    $('#categorymodal').val(task.category?.id || '');
-    $('#taskId').data('id', task.id);
-  }).fail(function () {
-    alert('Erro ao carregar os dados da tarefa.');
-  });
+		$('#categorymodal').val(task.category?.id || '');
+		$('#taskId').data('id', task.id);
+	})
+		.fail(function() {
+			alert('Erro ao carregar os dados da tarefa.');
+		});
 }
 
 
@@ -206,13 +213,10 @@ export function deleteTask(taskId) {
     $.ajax({
         url: `/api/tasks/${taskId}`,
         type: 'DELETE',
-        success: function(_, xhr) {
-            if (xhr.status === 204 || xhr.status === 200) {
-                console.log('Tarefa excluída com sucesso.');
-				loadInboxTasks(getCurrentCategoryFromURL()); 
-            } else {
-                alert('Erro inesperado. Código de status: ' + xhr.status);
-            }
+        success: function() {   
+            console.log('Tarefa excluída com sucesso.');
+			setupSidebarNavigation();
+			loadAllTasksForSidebarCount();
         },
         error: function(xhr, status, error) {
             console.error('Erro ao excluir a tarefa:', error, xhr, status);
@@ -229,7 +233,8 @@ export function updateDone(taskId) {
 		method: 'PATCH',
 		success: function() {
 			console.log('Tarefa marcada como feita:', taskId);
-			loadInboxTasks(getCurrentCategoryFromURL()); 
+			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
 			
 		},
 		error: function(xhr, status, error) {
@@ -260,8 +265,9 @@ export function updateTask(taskId, updatedTask) {
 				const newCategoryName = $('#categorymodal option:selected').text();
 				showCategoryToast(`A tarefa foi movida para <strong>${newCategoryName}</strong>`);	 
 			}
-			loadInboxTasks(getCurrentCategoryFromURL()); 
 			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
+			
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log("Erro:", textStatus, errorThrown, jqXHR);
@@ -278,7 +284,9 @@ export function createTask(text) {
 		data: JSON.stringify({ description: text }),
 		success: function() {
 			console.log('Tarefa criada');
-			loadInboxTasks(getCurrentCategoryFromURL()); 
+			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
+			
 		},
 		error: function() {
 			alert('Erro ao criar tarefa');

@@ -6,7 +6,6 @@
     <title>AcademicGTD</title>
     <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">	
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
@@ -32,15 +31,17 @@
                 <p class="clickable-icon history-btn" data-href="/categorias/agendado" data-categoria="Agendado"><i class="bi bi-calendar-event "></i> Agendados
                  <span class="task-count text-muted ms-2" data-category="Agendado" style="display: none;"></span>
                 </p>
-                <p class="clickable-icon history-btn" data-href="/categorias/projeto" data-categoria="Projeto"><i class="bi bi-kanban "></i> De Projetos
-                 <span class="task-count text-muted ms-2" data-category="Projeto" style="display: none;"></span>
-                </p>
+               
                 <p class="clickable-icon history-btn" data-href="/categorias/aguardando-resposta" data-categoria="Aguardando Resposta"><i class="bi bi-hourglass-split "></i> Aguardando
                 <span class="task-count text-muted ms-2 " data-category="Aguardando Resposta" style="display: none;"></span>
                 </p>
+                <p class="clickable-icon history-btn" data-href="/projetos" data-source="projetos"><i class="bi bi-kanban "></i> Projetos
+                 <span class="task-count text-muted ms-2" data-category="Projeto" style="display: none;"></span>
+                </p>
                 <p class="clickable-icon history-btn" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
                  <span class="task-count text-muted ms-2" data-category="Arquivo" style="display: none;"></span>
-                 </p>
+                 </p>            
+                  
                  <p class="fw-bold mt-3 history-btn">Outros</p>
                 <p class="clickable-icon history-btn" data-href="/categorias/moodle" data-source="moodle" ><img width="18" height="18" src="https://img.icons8.com/material/18/moodle.png" alt="moodle" /> Do Moodle</p>
 				 
@@ -213,7 +214,7 @@
                                     required>
                             </div>
 
-                            <div class="mb-2">
+							<div class="mb-2">
                                 <label for="prioridademodal" class="form-label fw-semibold">É
                                     prioridade?</label>
                                 <div class="form-check form-switch mb-2">
@@ -255,6 +256,20 @@
                                 </div>
                             </div>
 
+  
+                            <div class="mb-2 position-relative mt-2">
+								<label for="projectdescriptionmodal" class="form-label fw-semibold">Associado ao projeto</label>
+								<div class="d-flex align-items-center">
+									<select id="getprojects" name="getprojects" class="form-select me-2">
+										<!-- Opções -->
+									</select>
+									<button type="button" class="btn btn-outline-danger btn-sm"
+										id="unlinkProjectBtn" data-bs-toggle="tooltip"
+										title="Desvincular do projeto">
+										<i class="bi bi-x-circle"></i>
+									</button>
+								</div>
+							</div>
 
                             <div class="mb-2">
                                 <label for="categorymodal" class="form-label fw-semibold">Categoria</label>
@@ -267,12 +282,13 @@
                                     <option value="6">Arquivo</option>
                                 </select>
                             </div>
+                            
 
 							<div class="d-flex justify-content-between mt-4">
 								<button type="button" class="btn btn-outline-danger ms-2"
 									id="deleteTaskBtn" data-bs-toggle="modal"
 									data-bs-target="#deleteModal">Excluir
-									tarefa</button>
+									Tarefa</button>
 
 								<button type="submit"
 									class="btn btn-outline-secondary btn-modal-bg">Salvar
@@ -286,20 +302,49 @@
         </div>
     </div>
 
+	<!-- Modal para edição de projeto -->
+	<div class="modal fade" id="projectModal" tabindex="-1"
+		aria-labelledby="projectModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="projectModalLabel"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="input-group mb-4">
+						<input type="text" class="form-control" placeholder="Adicione uma nova tarefa ao projeto" id="newTask" required />
+						<button class="btn btn-dark btn-bg"  id="addTaskBtn" disabled>Adicionar</button>
+					</div>
+					<div id="projectModalBody" data-id=""></div>
+
+
+				</div>
+
+				<div class="modal-footer justify-content-between">
+					<button type="button" class="btn btn-outline-danger ms-2"
+						id="deleteProjectBtn" data-bs-toggle="modal"
+						data-bs-target="#deleteModal">Excluir Projeto</button>
+				
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 
-    <!-- Modal de Confirmação Delete-->
+	<!-- Modal de Confirmação Delete-->
     <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-body text-center p-4">
                     <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3"></i>
-                    <h5 class="mb-3">Tem certeza que deseja excluir a tarefa <strong class="text-danger" id="taskToDeleteDesc"></strong>?</h5>
+                    <h5 class="mb-3">Tem certeza que deseja excluir <strong class="text-danger" id="taskToDeleteDesc"></strong>?</h5>
                     <p class="text-muted">Essa ação não poderá ser desfeita.</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger" id="confirmDelete">Sim, excluir</button>
+                        <button type="button" class="btn btn-danger confirmDeleteClass" id="confirmDelete">Sim, excluir</button>
                     </div>
                 </div>
             </div>
@@ -328,24 +373,25 @@
 		</div>
 	</div>
 
-<!-- Toast alteração de categoria -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-  <div id="categoryToast" class="toast align-items-center bg-light text-dark border-0 fs-6 w-auto px-4 py-3" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="categoryToastBody">
-        A tarefa foi movida com sucesso!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
-    </div>
-  </div>
-</div>
+	<!-- Toast alteração de categoria -->
+	<div class="toast-container position-fixed bottom-0 end-0 p-3"
+		style="z-index: 1080">
+		<div id="categoryToast"
+			class="toast align-items-center bg-light text-dark border-0 fs-6 w-auto px-4 py-3"
+			role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body" id="categoryToastBody">A tarefa foi
+					movida com sucesso!</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto"
+					data-bs-dismiss="toast" aria-label="Fechar"></button>
+			</div>
+		</div>
+	</div>
 
-
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script type="module" src="../scripts/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" ></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module" src="../scripts/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
     

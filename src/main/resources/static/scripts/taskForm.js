@@ -6,19 +6,20 @@ import { createProject } from './api/project.js';
 import { formatDateToIso } from './helpers.js';
 
 export function initDeleteModalHandlers() {
-	$('#deleteTaskBtn').on('click', function() {
+	$('#deleteTaskBtn').on('click', function () {
 		const taskId = $('#taskId').data('id');
 		const taskDesc = $('#descriptionmodal').val();
 
-		$('#deleteModal').data('task-id', taskId);
+		$('#deleteModal').data('delete-type', 'task').data('id', taskId);
 		$('#taskToDeleteDesc').text(`"${taskDesc}"`);
 	});
 
 	$('#confirmDelete').on('click', function() {
-		const taskId = $('#deleteModal').data('task-id');
+		const taskId = $('#deleteModal').data('id');
+		const type = $('#deleteModal').data('delete-type');
 		console.log(taskId);
 
-		if (taskId) {
+		if (taskId && type === 'task') {
 			deleteTask(taskId);
 		}
 
@@ -70,7 +71,8 @@ export function initUpdateForm(){
 	        estimatedTimeId: $('#estimated_time').val(),
 	        subject: $('#subjectmodal').val(),
 	        delegated: $('#formSwitch2').prop('checked'),
-	        categoryId: $('#categorymodal').val()	
+	        categoryId: $('#categorymodal').val(),
+			projectId: $('#getprojects').val()
 	    };
 
 		console.log("Dados enviados para o update:", updatedTask);

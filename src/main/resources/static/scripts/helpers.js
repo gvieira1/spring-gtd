@@ -12,22 +12,19 @@ export function formatarCategoriaParaId(categoria) {
     return categoria.trim().replace(/\s+/g, '');
 }
 
-export function  handleButtonState(){
-	$('#newAction').on('input', function () {
-	        if ($(this).val().trim() === '') {
-	            $('#addBtn').prop('disabled', true);
-	        } else {
-	            $('#addBtn').prop('disabled', false);
-	        }
-	    });
+export function handleButtonState(inputSelector, buttonSelector) {
+  $(inputSelector).on('input', function () {
+    const isEmpty = $(this).val().trim() === '';
+    $(buttonSelector).prop('disabled', isEmpty);
+  });
 }
+
 
 export function getCurrentCategoryFromURL() {
 	const pathToCategory = {
 		'caixa-de-entrada': 'Caixa de Entrada',
 		'quando-puder': 'Quando Puder',
 		'agendado': 'Agendado',
-		'projeto': 'Projeto',
 		'aguardando-resposta': 'Aguardando Resposta',
 		'arquivo': 'Arquivo'
 	};
@@ -37,7 +34,7 @@ export function getCurrentCategoryFromURL() {
 
   if (currentPath.includes("/categorias/")) {
     return pathToCategory[extractedCategory] || decodeURIComponent(extractedCategory);
-  }
+  } 
 
   return null;
 }
@@ -60,3 +57,6 @@ export function formatDateToIso(brDateStr) {
 	const [day, month, year] = brDateStr.split('/');
 	return `${year}-${month}-${day}`;
 }
+
+
+

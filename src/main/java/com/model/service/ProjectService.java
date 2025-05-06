@@ -81,7 +81,7 @@ public class ProjectService {
 	    Project project =  projectRepository.findByUserIdAndId(user.getId(), idProject)
 	    		.orElseThrow(() -> new ResourceNotFoundException("Projeto não encontrado: " + idProject));
 	    CategoryEntity category = new CategoryEntity();
-	    category.setId(3L);
+	    category.setId(6L);
 	    EstimatedTime estTime = new EstimatedTime();
 		estTime.setId(9L);
 	    Task task = modelMapper.map(taskDTO, Task.class);

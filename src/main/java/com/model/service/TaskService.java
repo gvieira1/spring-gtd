@@ -132,6 +132,10 @@ public class TaskService {
 			existingTask.setEstimatedTime(estTime);
 		}
 		
+		if (updatedDTO.getProjectId() != null) {
+			projectService.addExistingTaskToProject(updatedDTO.getProjectId(), id);
+		}
+		
 		//getDone só pode ser definido por método específico, que deve chegar aqui já ok
 		if (existingTask.getDone() == null || !existingTask.getDone()) {
 			defineCategory(existingTask);
