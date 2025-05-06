@@ -283,18 +283,27 @@
                                     <option value="6">Arquivo</option>
                                 </select>
                             </div>
-                            
+
+							<div id="completedWarning" class="alert alert-primary d-none">
+								Esta tarefa já foi concluída! Reabra para editar.</div>
+
 
 							<div class="d-flex justify-content-between mt-4">
 								<button type="button" class="btn btn-outline-danger ms-2"
 									id="deleteTaskBtn" data-bs-toggle="modal"
-									data-bs-target="#deleteModal">Excluir
-									Tarefa</button>
+									data-bs-target="#deleteModal">Excluir Tarefa</button>
 
-								<button type="submit"
-									class="btn btn-outline-secondary btn-modal-bg">Salvar
-									Alterações</button>
+								<div id="actionArea">
+									<button type="submit" id="saveChangesBtn"
+										class="btn btn-outline-secondary btn-modal-bg">
+										Salvar Alterações</button>
+
+									<button type="button" id="reopenTaskBtn"
+										class="btn btn-outline-primary d-none btn-modal-bg">Reabrir Tarefa</button>
+								</div>
 							</div>
+
+
 						</form>
                     </div>
 

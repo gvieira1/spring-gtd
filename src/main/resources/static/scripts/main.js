@@ -1,6 +1,6 @@
 
 import { initializeSwitches } from './modal.js';
-import { initDeleteModalHandlers, initDoneModalForm, initUpdateForm, initTaskOrProjectModal} from './taskForm.js';
+import { initDeleteModalHandlers, initDoneModalForm, initUpdateForm, initTaskOrProjectModal, onReopenTask } from './taskForm.js';
 import { initProjectModal, initDeleteProjectModalHandlers } from './projectForm.js';
 import {  handleButtonState, createCalendar} from './helpers.js';
 import { setupSidebarNavigation, loadAllTasksForSidebarCount } from './api/sidebar.js'; 
@@ -24,4 +24,5 @@ $(document).ready(function() {
 	initNotificationSettings();
 	initDeleteProjectModalHandlers();
 	loadAllTasksForSidebarCount();
+	onReopenTask();
 });

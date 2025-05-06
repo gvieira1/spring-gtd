@@ -94,7 +94,6 @@ export function loadDoneTasks() {
 		});
 }
 
-
 export function renderTasks({ tasks, containerSelector = '#taskList', showDone = false, showToggle = true }) {
 	const $container = $(containerSelector);
 	$container.empty();
@@ -121,12 +120,12 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 
 		const badge = isScheduled 
 			? `<span class="badge bg-light text-dark ">${formatDateFromIso(task.deadline)}</span>` 
-			: `<span class="badge bg-light text-dark ">${task.category.name}</span>`;
+			: `<span class="badge bg-light text-dark ">${task.category.name}</span>`;	
 
-		const checkbox = showToggle
-			? `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''}/>`
-			: '';
-
+	    const checkbox = showToggle
+						? `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''}/>`
+						: `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''} disabled/>`;
+							
 		const taskCard = $(`
 			<div class="task-card d-flex justify-content-between align-items-center mb-2 ${statusClass}" 
 				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
@@ -185,7 +184,17 @@ function openEditModal(tarefaId) {
 				loadProjectOptions();
 		}
 		
-		
+		if (task.done) {
+		      $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', true);
+		      $('#completedWarning').removeClass('d-none');
+		      $('#reopenTaskBtn').removeClass('d-none');
+			  $('#saveChangesBtn').addClass('d-none');
+		    } else {
+		      $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', false);
+		      $('#completedWarning').addClass('d-none');
+		      $('#reopenTaskBtn').addClass('d-none');
+			  $('#saveChangesBtn').removeClass('d-none'); 
+		    }
 
 		$('#categorymodal').val(task.category?.id || '');
 		$('#taskId').data('id', task.id);
@@ -236,7 +245,6 @@ export function updateDone(taskId) {
 
 export function updateTask(taskId, updatedTask) {
 	
-	  
 	  const originalCategory = $('#taskModal').data('originalCategory');
 	  
     $.ajax({
@@ -275,8 +283,8 @@ export function createTask(text) {
 		success: function() {
 			console.log('Tarefa criada');
 
-			setupSidebarNavigation();
 			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
 			
 		},
 		error: function() {
@@ -287,6 +295,26 @@ export function createTask(text) {
 		$('#newAction').val('');
 	});
 
+}
+
+export function reopenTask(taskId){
+	$.ajax({
+	    url: `/api/tasks/${taskId}/reopen`,
+	    method: 'PUT',
+	    success: function () {
+	      $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', false);
+	      $('#completedWarning').addClass('d-none');
+	      $('#reopenTaskBtn').addClass('d-none');
+		  $('#saveChangesBtn').removeClass('d-none'); 
+
+		  loadAllTasksForSidebarCount();
+		  setupSidebarNavigation();
+	    },
+	    error: function () {
+	      alert('Erro ao reabrir a tarefa.');
+	    }
+	  });
+	
 }
 
 function showCategoryToast(message = "Categoria alterada!") {

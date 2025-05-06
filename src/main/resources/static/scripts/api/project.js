@@ -1,6 +1,6 @@
 
 import { renderTasks } from './task.js';
-import { loadAllTasksForSidebarCount } from './sidebar.js'; 
+import { loadAllTasksForSidebarCount, setupSidebarNavigation } from './sidebar.js'; 
 
 export function createProject(text) {
 	$.ajax({
@@ -33,6 +33,7 @@ export function createTaskFromProject(projectId, text) {
 			console.log('Tarefa de projeto criada');
 			openProjectModal(projectId);
 			loadAllTasksForSidebarCount();
+			setupSidebarNavigation();
 		},
 		error: function() {
 			alert('Erro ao criar tarefa no projeto');

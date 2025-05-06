@@ -1,5 +1,6 @@
 package com.model.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -236,6 +237,27 @@ public class TaskService {
 		return toDTO(saved);
 	}
 	
+	public void reopenTask(Long taskId) {
+		User user = userService.getAuthenticatedUser();	
+	    Task task = taskRepository.findByUserIdAndId(user.getId(), taskId)
+	        .orElseThrow(() -> new ResourceNotFoundException("task não encontrada: " + taskId));
+
+	    task.setDone(false);
+	    task.setCompletionDate(null);
+	    
+	    if (task.getDeadline() != null && task.getDeadline().isBefore(LocalDate.now())) {
+	        task.setDeadline(null);
+	    }
+
+	    taskRepository.save(task);
+	    
+	    if (task.getProject() != null) {
+			projectService.reopenProject(task.getProject());
+		}
+	    
+	   
+
+	}
 
 	public TaskResponseDTO createTaskFromMoodleActivity(User user, CourseDTO course, ActivityStatusDTO activity) {
 		Optional<Task> existingTask = taskRepository.findByUserIdAndMoodleCourseIdAndMoodleCmid(user.getId(), course.getId(), (long) activity.getCmid());

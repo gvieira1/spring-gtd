@@ -95,6 +95,13 @@ public class TaskController {
 	    return ResponseEntity.ok(taskService.markAsCompleted(id));
 	}
 	
+	@Operation(summary = "Reopen a task")
+	@PutMapping("/{id}/reopen")
+	public ResponseEntity<Void> reopenTask(@PathVariable Long id) {
+	    taskService.reopenTask(id);
+	    return ResponseEntity.noContent().build();
+	}
+	
 	@Operation(summary = "Delete a task by its ID")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteTask(@PathVariable Long id) {

@@ -90,6 +90,10 @@ public class ProjectService {
 	    task.setUser(user);
 	    task.setEstimatedTime(estTime);
 		Task saved = taskRepository.save(task);
+		
+		if (project.getDone()) {
+			reopenProject(project);
+		}
 
 		return modelMapper.map(saved, TaskResponseDTO.class);
 	}
@@ -127,16 +131,23 @@ public class ProjectService {
 	}
 
 	public void updateProjectStatus(Project project) {
+		
 	    List<Task> tasks = taskRepository.findByProjectId(project.getId());
-
-	    boolean allDone = !tasks.isEmpty() && tasks.stream()
-	        .allMatch(Task::getDone);
+	    boolean allDone = !tasks.isEmpty() && tasks.stream().allMatch(Task::getDone);
 
 	    if (!Objects.equals(project.getDone(), allDone)) {
 	        project.setDone(allDone);
 	        projectRepository.save(project);
 	    }
 	}
+	
+	public void reopenProject(Project project) {
+	    if (project.getDone()) {
+	        project.setDone(false);
+	        projectRepository.save(project);
+	    }
+	}
+
 	
 	public Project toEntity(ProjectRequestDTO dto) {
         return modelMapper.map(dto, Project.class);

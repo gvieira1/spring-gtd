@@ -1,7 +1,7 @@
 
 
 
-import { deleteTask, updateDone, updateTask, createTask } from './api/task.js';
+import { deleteTask, updateDone, updateTask, createTask, reopenTask } from './api/task.js';
 import { createProject } from './api/project.js';
 import { formatDateToIso } from './helpers.js';
 
@@ -128,5 +128,21 @@ export function initTaskOrProjectModal() {
 	    $('#newAction').val('');
 	});
 
+}
+
+export function onReopenTask(){
+	
+	$('#reopenTaskBtn').on('click', function () {
+	  const taskId = $('#taskModal').data('id');
+	  console.log(taskId);
+	  
+	  $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', false);
+	  $('#completedWarning').addClass('d-none');
+	  $(this).addClass('d-none');
+	  $('#saveChangesBtn').removeClass('d-none'); 
+	  $('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
+	  
+	  reopenTask(taskId);
+	});
 }
 
