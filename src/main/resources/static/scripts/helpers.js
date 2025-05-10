@@ -1,15 +1,12 @@
 
-// Atualiza o texto do label com base no estao do switch
+import { defineCategory } from "./api/categorias.js";
+
 export function updateSwitchLabel(switchElement, switchLabel) {
     if ($(switchElement).prop('checked')) {
         $(switchLabel).text("Sim");
     } else {
         $(switchLabel).text("Não");
     }
-}
-
-export function formatarCategoriaParaId(categoria) {
-    return categoria.trim().replace(/\s+/g, '');
 }
 
 export function handleButtonState(inputSelector, buttonSelector) {
@@ -46,6 +43,13 @@ export function createCalendar(){
 		autoclose: true,
 		clearBtn: true
 	});
+	
+	$('#sandbox-container').on('input change', function () {
+			setTimeout(() => {
+				defineCategory();
+			}, 0);
+		});
+
 }
 
 export function formatDateFromIso(isoDateStr) {

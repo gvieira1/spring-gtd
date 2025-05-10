@@ -87,6 +87,7 @@ public class TaskService {
 		task.setCategory(category);
 		task.setUser(user);
 		task.setEstimatedTime(estTime);
+		task.setPriority(dto.getPriority() != null ? dto.getPriority() : false);
 		Task saved = taskRepository.save(task);
 
 		if (saved.getProject() != null) {
@@ -323,7 +324,8 @@ public class TaskService {
 	}
 
 	private Map<Boolean, Long> groupByPriority(List<Task> tasks) {
-		return tasks.stream().collect(Collectors.groupingBy(Task::getPriority, Collectors.counting()));
+		return tasks.stream()
+				.collect(Collectors.groupingBy(task -> Optional.ofNullable(task.getPriority()).orElse(false), Collectors.counting()));
 	}
 
 	private Map<String, Long> groupByEstimatedTime(List<Task> tasks) {
@@ -334,6 +336,11 @@ public class TaskService {
 	private Map<String, Long> groupTasksCompletedByDay(List<Task> tasks) {
 	    return tasks.stream()
 	        .collect(Collectors.groupingBy(task -> task.getCompletionDate().toLocalDate().toString(), Collectors.counting()));
+	}
+	
+	public List<String> returnDistinctSubjects(){
+		User user = userService.getAuthenticatedUser();	
+		return taskRepository.findDistinctSubjectsByUser(user);
 	}
 
 	

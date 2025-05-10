@@ -2,13 +2,17 @@ import { getCurrentCategoryFromURL } from '/scripts/helpers.js';
 import { checkAndNotifyUpcomingTasks } from './notifications.js';
 import { loadMoodleTasks, loadInboxTasks, loadDoneTasks, fetchPendingTasks} from './task.js';
 import { fetchActiveProjects } from './project.js';
+import { loadCalendarApi } from './calendar.js';
+import { loadWeeklyReport } from './report.js';
 
 const taskLoaders = {
 	'categoria': loadInboxTasks,
 	'moodle': loadMoodleTasks,
 	'concluidas': loadDoneTasks,
 	'pendentes': fetchPendingTasks,
-	'projetos': fetchActiveProjects
+	'projetos': fetchActiveProjects,
+	'calendario': loadCalendarApi,
+	'relatorio': loadWeeklyReport	
 };
 
 export function setupSidebarNavigation() {
@@ -56,6 +60,10 @@ export function setupSidebarNavigation() {
 		    source = 'pendentes';
 		} else if (location.pathname.includes('projetos')) {
 			source = 'projetos';
+		} else if (location.pathname.includes('calendario')){
+			source = 'calendario';
+		} else if (location.pathname.includes('relatorio')){
+			source = 'relatorio'
 		} else {
 			source = 'categoria';
 		}

@@ -1,4 +1,4 @@
-
+/*
 export function createProjeto(projeto) {
     $.ajax({
         url: '/gtd-spring/projeto',
@@ -39,3 +39,4 @@ export function loadProjetos() {
         alert('Erro ao carregar projetos.');
     });
 }
+*/

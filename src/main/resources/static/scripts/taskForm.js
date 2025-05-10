@@ -79,15 +79,18 @@ export function initUpdateForm(){
 	    e.preventDefault();
 
 	    const taskId = $('#taskModal').data('id');
-		let deadlineValue = $('#deadlinemodal').val();
-		deadlineValue = deadlineValue === "" ? null : formatDateToIso(deadlineValue);
-
+		
+		const deadlineCheck = validateDeadline('deadlinemodal', 'deadlineError');
+		    if (!deadlineCheck.valid) {
+		        e.preventDefault();
+		        return;
+		    }
 		 
 	    const updatedTask = {
 	        id: taskId,
 	        description: $('#descriptionmodal').val(),
 	        priority: $('#formSwitch1').prop('checked'),
-	        deadline: deadlineValue,
+	        deadline: deadlineCheck.value,
 	        estimatedTimeId: $('#estimated_time').val(),
 	        subject: $('#subjectmodal').val(),
 	        delegated: $('#formSwitch2').prop('checked'),
@@ -99,6 +102,31 @@ export function initUpdateForm(){
 	    updateTask(taskId, updatedTask);
 	});
 }
+
+function validateDeadline(inputId, errorId) {
+    const rawValue = $(`#${inputId}`).val().trim();
+
+    $(`#${inputId}`).removeClass('is-invalid');
+    $(`#${errorId}`).addClass('d-none');
+
+    if (rawValue === "") {
+        return { valid: true, value: null };
+    }
+
+    const [day, month, year] = rawValue.split('/');
+    const deadlineDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (isNaN(deadlineDate) || deadlineDate < today) {
+        $(`#${inputId}`).addClass('is-invalid');
+        $(`#${errorId}`).removeClass('d-none');
+        return { valid: false };
+    }
+
+    return { valid: true, value: formatDateToIso(rawValue) };
+}
+
 
 export function initTaskOrProjectModal() {
     $('#taskOrProjectModal').on('show.bs.modal', function () {

@@ -101,6 +101,62 @@ input[type="checkbox"]:checked {
 	border-color: #6667ab;
 }
 
+#calendarContainer {
+  height: 700px; 
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding-left: 0; 
+}
+
+#calendar {
+  height: 85%;
+}
+
+@media (max-width: 768px) {
+  #calendarContainer {
+    height: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  #calendarContainer {
+    height: 500px;
+  }
+}
+
+.toastui-calendar-weekday-grid-date-decorator {
+    background-color: #8179B3 !important; 
+    border-radius: 4px !important;       
+    color: white !important;               
+    font-weight: normal !important;        
+}
+
+.ui-autocomplete {
+    z-index: 1056 !important;
+    background-color: white;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    position: absolute;
+    list-style: none;
+}
+
+.ui-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.ui-menu-item:hover {
+    background-color: #ebe9f6;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+
+
+
 
 
 

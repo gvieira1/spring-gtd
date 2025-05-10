@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.model.entity.Task;
 import com.model.entity.User;
@@ -33,5 +35,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findAllByUserAndDoneTrueAndCompletionDateAfter(User user, LocalDateTime sevenDaysAgo);
 
 	Page<Task> findByUserIdAndCategory_Name(Long id, String category, Pageable pageable);
+	
+	@Query("SELECT DISTINCT t.subject FROM Task t WHERE t.subject IS NOT NULL AND t.user = :user")
+	List<String> findDistinctSubjectsByUser(@Param("user") User user);
+
 
 }

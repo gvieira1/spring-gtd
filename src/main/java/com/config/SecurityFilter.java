@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.model.entity.User;
 import com.model.service.TokenService;
 import com.repository.UserRepository;
@@ -16,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -29,21 +31,34 @@ public class SecurityFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		String token = extractTokenFromCookie(request);
-        if (token != null) {
-            String userId = tokenService.validateToken(token);
-            if (userId != null) {
-                User user = userRepository.findById(Long.parseLong(userId))
-                        .orElseThrow();
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		try {
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
+			String token = extractTokenFromCookie(request);
+			if (token != null) {
+				String userId = tokenService.validateToken(token);
+				if (userId != null) {
+					User user = userRepository.findById(Long.parseLong(userId)).orElseThrow();
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
+							null, user.getAuthorities());
 
-        filterChain.doFilter(request, response);
-		
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+
+			filterChain.doFilter(request, response);
+
+		} catch (TokenExpiredException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Token expirado");
+			response.getWriter().flush();
+		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().write("Token inválido");
+			response.getWriter().flush();
+		}
+
 	}
 
 	private String extractTokenFromCookie(HttpServletRequest request) {

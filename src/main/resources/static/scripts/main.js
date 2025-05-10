@@ -5,7 +5,7 @@ import { initProjectModal, initDeleteProjectModalHandlers } from './projectForm.
 import {  handleButtonState, createCalendar} from './helpers.js';
 import { setupSidebarNavigation, loadAllTasksForSidebarCount } from './api/sidebar.js'; 
 import {  initNotificationSettings } from './api/notifications.js';
-import { loadMoodleTasks} from './api/task.js';
+import { loadMoodleTasks } from './api/task.js';
 
 
 $(document).ready(function() {
@@ -25,4 +25,12 @@ $(document).ready(function() {
 	initDeleteProjectModalHandlers();
 	loadAllTasksForSidebarCount();
 	onReopenTask();
+});
+
+$.ajaxSetup({
+    complete: function(xhr) {
+        if (xhr.status === 401) {
+            window.location.href = "/";
+        }
+    }
 });

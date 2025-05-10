@@ -25,7 +25,7 @@ public class TokenService {
             return JWT.create()
                 .withIssuer("spring-gtd")
                 .withSubject(user.getId().toString())
-                .withExpiresAt(Instant.now().plus(2, ChronoUnit.HOURS))
+                .withExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
                 .sign(algorithm);
         } catch (JWTCreationException e) {
             throw new RuntimeException("Erro na criação do token", e);
@@ -42,7 +42,7 @@ public class TokenService {
                 .verify(token)
                 .getSubject(); 
         } catch (JWTVerificationException e) {
-            return null; //ou TokenInvalidException
+            return null; 
         }
     }
 }

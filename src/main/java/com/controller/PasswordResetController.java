@@ -33,7 +33,7 @@ public class PasswordResetController {
     @PostMapping("/forgot")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequestDTO request) {
         passwordResetService.sendPasswordResetToken(request.email());
-        return ResponseEntity.ok("Password reset email sent!");
+        return ResponseEntity.ok("Se este e-mail estiver cadastrado, enviaremos instruções para a recuperação de senha.");
     }
 
 

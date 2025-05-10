@@ -143,6 +143,9 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 		taskCard.on('click', function () {
 			const tarefaId = $(this).data('id');
 			openEditModal(tarefaId);
+			
+			const taskDesc = task.description;
+			$('#taskModalLabel').text(taskDesc);
 		});
 
 		$container.append(taskCard);
@@ -157,10 +160,22 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 
 
 
-function openEditModal(tarefaId) {
+export function openEditModal(tarefaId) {
 	$('#taskForm')[0].reset();
-
+	
+	const fromProject = $('body').attr('data-from-project') === 'true';
+	 if (fromProject) {
+	   $('#backToProjectBtn').removeClass('d-none');
+	   $('#closeTaskModalBtn').addClass('d-none');
+	 } else {
+	   $('#backToProjectBtn').addClass('d-none');
+	   $('#closeTaskModalBtn').removeClass('d-none');
+	 }
+	
 	$.get(`/api/tasks/${tarefaId}`, function(task) {
+
+		autocompleteSubjects();
+		
 		$('#descriptionmodal').val(task.description);
 		$('#formSwitch1').prop('checked', task.priority === true);
 		$('#formSwitch2').prop('checked', task.delegated === true);
@@ -263,8 +278,10 @@ export function updateTask(taskId, updatedTask) {
 				const newCategoryName = $('#categorymodal option:selected').text();
 				showCategoryToast(`A tarefa foi movida para <strong>${newCategoryName}</strong>`);	 
 			}
+
 			loadAllTasksForSidebarCount();
 			setupSidebarNavigation();
+
 			
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -293,6 +310,25 @@ export function createTask(text) {
 	}).always(function() {
 		$('#taskOrProjectModal').modal('hide');
 		$('#newAction').val('');
+	});
+
+}
+
+ function autocompleteSubjects(){
+	
+	$.ajax({
+	    url: '/api/tasks/subjects',
+	    method: 'GET',
+	    success: function(data) {
+	        $("#subjectmodal").autocomplete({
+	            source: data,
+				minLength: 0
+	        });
+	    }
+	});
+	
+	$("#subjectmodal").on("focus", function () {
+	    $(this).autocomplete("search", "");
 	});
 
 }

@@ -9,7 +9,9 @@ public class SpaController {
     @GetMapping(value = {
         "/categorias/{path:[^\\.]*}", 
         "/categorias/**",
-        "/projetos/**"
+        "/projetos/**",
+        "/calendario",
+        "/relatorio"
     })
     public String redirect() {
         return "forward:/pages/dashboard.html";

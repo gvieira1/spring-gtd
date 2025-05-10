@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.exception.UserNotFoundException;
 import com.model.entity.PasswordResetToken;
 import com.model.entity.User;
 import com.repository.PasswordResetTokenRepository;
@@ -30,8 +31,12 @@ public class PasswordResetService {
     }
 
     public void sendPasswordResetToken(String email) {
-        User user = userService.findByEmail(email);
-
+    	User user;
+		try {
+			user = userService.findByEmail(email);
+		} catch (UserNotFoundException e) {
+			return;
+		}
         String token = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusHours(24);
         

@@ -1,6 +1,8 @@
 package com.controller;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -67,6 +69,13 @@ public class TaskController {
 	@GetMapping("/weekly-report")
 	public ResponseEntity<WeeklyReportDTO> getWeeklyReport(@AuthenticationPrincipal User user) {
 		return ResponseEntity.ok(taskService.generateWeeklyReport(user));
+	}
+	
+	@Operation(summary = "Get distinct subjects from tasks")
+	@GetMapping("/subjects")
+	public ResponseEntity<List<String>> getSubjects() {
+	    List<String> subjects = taskService.returnDistinctSubjects();
+	    return ResponseEntity.ok(subjects);
 	}
 
 	@Operation(summary = "Create a task just with description")

@@ -82,6 +82,8 @@ function renderActiveProjects(projects, containerSelector = '#taskList') {
 	const $container = $(containerSelector);
 	setupProjectListHeader($container, projects);
 	renderProjectCards(projects, $container);
+	backToProjectModal();
+	
 }
 
 
@@ -104,6 +106,7 @@ function setupProjectListHeader($container, projects) {
 
 function renderProjectCards(projects, $container) {
 	$container.find('.project-data').remove();
+	$('body').attr('data-from-project', 'true');
 
 	const showCompleted = $('#showCompletedProjects').is(':checked');
 	const visibleProjects = showCompleted ? projects : projects.filter(p => !p.done);
@@ -125,7 +128,8 @@ function renderProjectCards(projects, $container) {
 		projectCard.on('click', function () {
 			const projectId = $(this).data('id');
 			const projectDesc = $(this).data('description');
-
+			
+			$('#projectModal').attr('data-project-id', projectId);
 			openProjectModal(projectId);
 			$('#projectModalLabel').text(projectDesc);
 		});
@@ -134,11 +138,29 @@ function renderProjectCards(projects, $container) {
 	});
 }
 
+function backToProjectModal() {
+	$(document).on('click', '#backToProjectBtn', function(e) {
+		const taskModal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
+		taskModal.hide();
 
+		const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
+		
+		const projectId = $('#projectModal').attr('data-project-id');
+		openProjectModal(projectId);
+		projectModal.show();
+	});
+	
+	$(document).on('hidden.bs.modal', '#projectModal', function(e) {
+		$('body').removeAttr('data-from-project');
+	});
+
+}
 
 
 export function openProjectModal(projectId) {
 
+	$('body').attr('data-from-project', 'true');
+	
 		$.ajax({
 				url: `/api/project/${projectId}/tasks`,
 				method: 'GET',
@@ -180,5 +202,8 @@ export function loadProjectOptions(selectedId = null) {
         alert("Erro ao carregar projetos.");
     });
 }
+
+
+
 
 

@@ -7,9 +7,10 @@
     <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">	
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/estilo.css">
+   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
-    
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+     <link rel="stylesheet" href="../css/estilo.css">
 </head>
 <body>
 
@@ -54,10 +55,10 @@
             <div class="col-md-10 ms-auto">
                 <nav class="d-flex justify-content-between p-3 bg-white border-bottom w-100">
                     <div>
-                        <a class="me-2 text-decoration-none link-bg" >Dashboard</a>
                         <a class="me-2 text-decoration-none link-bg history-btn" data-href="/categorias/pendentes" data-source="pendentes">Tarefas Pendentes</a>
-                        <a class="me-2 text-decoration-none  link-bg history-btn" data-href="/projetos" data-source="projetos">Projetos Ativos</a>
-                        <a class="text-decoration-none  link-bg" href="#">Calendário</a>
+                        <a class="me-2 text-decoration-none link-bg history-btn" data-href="/relatorio" data-source="relatorio">Dashboard</a>
+                       <!--  <a class="me-2 text-decoration-none  link-bg history-btn" data-href="/projetos" data-source="projetos">Projetos Ativos</a> -->
+                        <a class="text-decoration-none  link-bg history-btn" data-href="/calendario" data-source="calendario">Calendário</a>
 
                     </div>
                     <div>
@@ -67,7 +68,7 @@
                     </div>
                 </nav>
 
-                <div class="container mt-4">
+                <div class="container mt-3">
 
 						<div class="input-group mb-3">
 							<input type="text" class="form-control"
@@ -77,8 +78,10 @@
 						</div>
 					
 					<h4 class="fw-bold" id="categoryTitle"></h4>
-						<div id="taskList" class="mt-4"></div>
+					<div id="taskList" class="mt-4">	
 						
+					</div>
+
 				</div>
 
             </div>
@@ -199,13 +202,16 @@
     <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="tarefasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tarefasModalLabel">Editar Tarefa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header d-flex justify-content-between ">
+                    <h5 class="modal-title" id="taskModalLabel"></h5>  
+                <div>
+                    <button type="button" class="btn d-none " id="backToProjectBtn"><i class="bi bi-arrow-left"></i></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeTaskModalBtn"></button>
+                </div>
                 </div>
                 <div class="modal-body">
                     <div id="taskId" data-id=""></div>
-                    <div class="p-4 border rounded-3 shadow-sm">
+                    <div class="p-1">
                         <form id="taskForm">
                             <input type="hidden" id="tarefaId">
 
@@ -231,9 +237,12 @@
 									<input type="text" class="form-control" id="deadlinemodal" />
 									<span class="input-group-addon	"> </span>
 								</div>
+								<div class="invalid-feedback " id="deadlineError" >
+  									  A data precisa ser hoje ou uma data futura.
 							</div>
-
-
+							
+							</div>
+	
 
 							<div class="mb-2">
                                 <label for="tempoEstimadomodal" class="form-label fw-semibold">Tempo
@@ -244,8 +253,8 @@
                             </div>
 
                             <div class="mb-2">
-                                <label for="subjectmodal" class="form-label fw-semibold">Assunto</label> <input
-                                    type="text" class="form-control" id="subjectmodal" name="subjectmodal" required>
+                                <label for="subjectmodal" class="form-label fw-semibold">Assunto</label> 
+                                <input type="text" class="form-control" id="subjectmodal" name="subjectmodal">
                             </div>
 
                             <div class="mb-2">
@@ -424,11 +433,15 @@
 	</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="module" src="../scripts/main.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" ></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+<script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="../scripts/main.js"></script>
     
    
 </body>
