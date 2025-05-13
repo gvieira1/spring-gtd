@@ -1,19 +1,19 @@
 
-import { defineCategory } from "./api/categorias.js";
+import { defineCategory } from "./api/category.js";
 
 export function updateSwitchLabel(switchElement, switchLabel) {
-    if ($(switchElement).prop('checked')) {
-        $(switchLabel).text("Sim");
-    } else {
-        $(switchLabel).text("Não");
-    }
+	if ($(switchElement).prop('checked')) {
+		$(switchLabel).text("Sim");
+	} else {
+		$(switchLabel).text("Não");
+	}
 }
 
 export function handleButtonState(inputSelector, buttonSelector) {
-  $(inputSelector).on('input', function () {
-    const isEmpty = $(this).val().trim() === '';
-    $(buttonSelector).prop('disabled', isEmpty);
-  });
+	$(inputSelector).on('input', function() {
+		const isEmpty = $(this).val().trim() === '';
+		$(buttonSelector).prop('disabled', isEmpty);
+	});
 }
 
 
@@ -26,41 +26,63 @@ export function getCurrentCategoryFromURL() {
 		'arquivo': 'Arquivo'
 	};
 
-  const currentPath = location.pathname;
-  const extractedCategory = currentPath.split('/').pop();
+	const currentPath = location.pathname;
+	const extractedCategory = currentPath.split('/').pop();
 
-  if (currentPath.includes("/categorias/")) {
-    return pathToCategory[extractedCategory] || decodeURIComponent(extractedCategory);
-  } 
+	if (currentPath.includes("/categorias/")) {
+		return pathToCategory[extractedCategory] || decodeURIComponent(extractedCategory);
+	}
 
-  return null;
+	return null;
 }
 
-export function createCalendar(){
+export function createCalendar() {
 	$('#sandbox-container .input-group.date').datepicker({
-	    format: "dd/mm/yyyy",
+		format: "dd/mm/yyyy",
 		language: "pt-BR",
 		autoclose: true,
 		clearBtn: true
+	}).on('input change changeDate clearDate', function() {
+		defineCategory();
 	});
-	
-	$('#sandbox-container').on('input change', function () {
-			setTimeout(() => {
-				defineCategory();
-			}, 0);
-		});
 
 }
 
 export function formatDateFromIso(isoDateStr) {
-    const [year, month, day] = isoDateStr.split('-');
-    return `${day}/${month}/${year}`;
+	const [year, month, day] = isoDateStr.split('-');
+	return `${day}/${month}/${year}`;
 }
 
 export function formatDateToIso(brDateStr) {
 	const [day, month, year] = brDateStr.split('/');
 	return `${year}-${month}-${day}`;
 }
+
+export function runPageTransition() {
+	if ($('#page-transition').length) {
+		$('#page-transition').remove();
+	}
+
+	$('body').prepend(`<div id="page-transition" style="
+		position: fixed;
+		top: 0; left: 0;
+		width: 100vw;
+		height: 100vh;
+		background-color: #8179B3;
+		z-index: 9999;
+		opacity: 0.6;
+		transition: opacity 0.6s ease;
+	"></div>`);
+
+	setTimeout(() => {
+		$('#page-transition').css('opacity', '0');
+		setTimeout(() => {
+			$('#page-transition').remove();
+		}, 200);
+	}, 50);
+}
+
+
 
 
 

@@ -19,7 +19,6 @@ export function createProject(text) {
 		$('#taskOrProjectModal').modal('hide');
 		$('#newAction').val('');
 	});
-
 }
 
 export function createTaskFromProject(projectId, text) {
@@ -41,7 +40,6 @@ export function createTaskFromProject(projectId, text) {
 	}).always(function() {
 		$('#newTask').val('');
 	});
-
 }
 
 export function deleteProject(projectId) {
@@ -82,8 +80,7 @@ function renderActiveProjects(projects, containerSelector = '#taskList') {
 	const $container = $(containerSelector);
 	setupProjectListHeader($container, projects);
 	renderProjectCards(projects, $container);
-	backToProjectModal();
-	
+    backToProjectModal();	
 }
 
 
@@ -139,23 +136,23 @@ function renderProjectCards(projects, $container) {
 }
 
 function backToProjectModal() {
-	$(document).on('click', '#backToProjectBtn', function(e) {
+	$(document).on('click', '#backToProjectBtn', function() {
 		const taskModal = bootstrap.Modal.getInstance(document.getElementById('taskModal'));
 		taskModal.hide();
 
 		const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
 		
+		$('.modal-backdrop').remove();
+		$('body').removeClass('modal-open');
 		const projectId = $('#projectModal').attr('data-project-id');
 		openProjectModal(projectId);
 		projectModal.show();
 	});
 	
-	$(document).on('hidden.bs.modal', '#projectModal', function(e) {
+	$(document).on('hidden.bs.modal', '#projectModal', function() {
 		$('body').removeAttr('data-from-project');
 	});
-
 }
-
 
 export function openProjectModal(projectId) {
 
@@ -176,15 +173,9 @@ export function openProjectModal(projectId) {
 				},
 				error: function() {
 				   $('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas deste projeto.</div>');
-			}
-				
-			});
-	
-
+			}				
+		});
 }
-
-
-
 
 export function loadProjectOptions(selectedId = null) {
     $.get('/api/project', function(activeProjects) {

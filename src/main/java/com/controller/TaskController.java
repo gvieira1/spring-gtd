@@ -77,6 +77,13 @@ public class TaskController {
 	    List<String> subjects = taskService.returnDistinctSubjects();
 	    return ResponseEntity.ok(subjects);
 	}
+	
+	@Operation(summary = "Get tasks by context")
+	@GetMapping("/by-contexts")
+	public ResponseEntity<List<TaskResponseDTO>> findByContexts(@RequestParam List<Long> contextIds) {
+	    List<TaskResponseDTO> dtos = taskService.findDTOsByUserAndContexts(contextIds);
+	    return ResponseEntity.ok(dtos);
+	}
 
 	@Operation(summary = "Create a task just with description")
 	@PostMapping

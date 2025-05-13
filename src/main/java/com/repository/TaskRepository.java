@@ -38,6 +38,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	@Query("SELECT DISTINCT t.subject FROM Task t WHERE t.subject IS NOT NULL AND t.user = :user")
 	List<String> findDistinctSubjectsByUser(@Param("user") User user);
+	
+	@Query("SELECT DISTINCT c FROM Task t JOIN t.contexts c WHERE c IS NOT NULL AND t.user = :user")
+	List<String> findDistinctContextsByUser(@Param("user") User user);
+
+	List<Task> findDistinctByUserAndContextsIdIn(User user, List<Long> contextIds);
 
 
 }

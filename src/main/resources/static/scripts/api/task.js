@@ -15,16 +15,14 @@ export function fetchPendingTasks(){
 			},
 			error: function() {
 			   $('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas pendentes.</div>');
-		}
-			
-		});
+		}		
+	});
 }
 
 
 function fetchTasksByCategory(category = null) {
 	const queryParam = category ? `?category=${encodeURIComponent(category)}` : '';
 	const url = `/api/tasks${queryParam}`;
-
 	return $.ajax({
 		url: url,
 		method: 'GET',
@@ -37,13 +35,12 @@ export function loadInboxTasks(category = null) {
 	$('#categoryTitle').text(title);
 
 	fetchTasksByCategory(category)
-		.then(response => {
-			console.log(response);
-			renderTasks({ tasks: response.content, showDone: false, showToggle: true });
-		})
-		.catch(() => {
-			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas.</div>');
-		});
+	.then(response => {
+		renderTasks({ tasks: response.content, showDone: false, showToggle: true });
+	})
+	.catch(() => {
+		$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas.</div>');
+	});
 }
 
 function fetchTasksFromMoodle() {
@@ -61,10 +58,7 @@ export function loadMoodleTasks() {
 
 	fetchTasksFromMoodle()
 		.then(response => {
-			console.log(response);
 			renderTasks({ tasks: response.content, showDone: false, showToggle: true });
-
-			
 		})
 		.catch(() => {
 			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas do Moodle.</div>');
@@ -73,7 +67,6 @@ export function loadMoodleTasks() {
 
 function fetchTasksDone() {
 	const url = `/api/tasks`;
-
 	return $.ajax({
 		url: url,
 		method: 'GET',
@@ -86,7 +79,6 @@ export function loadDoneTasks() {
 
 	fetchTasksDone()
 		.then(response => {
-			console.log(response);
 			renderTasks({ tasks: response.content, showDone: true, showToggle: false });
 		})
 		.catch(() => {
@@ -101,7 +93,6 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 	const filteredTasks = typeof showDone === 'boolean'
 		? tasks.filter(task => task.done === showDone)
 		: tasks;
-
 
 	if (filteredTasks.length === 0) {
 		const message = showDone 
@@ -118,14 +109,21 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 		
 		const isProject = task.project != null ? `<span class="badge bg-light text-dark fs-7">${'Projeto'}</span>` : '';
 
+		const now = new Date();
+		const deadlineDate = new Date(task.deadline);
+		const isOverdue = isScheduled && deadlineDate < now;
+
 		const badge = isScheduled 
-			? `<span class="badge bg-light text-dark ">${formatDateFromIso(task.deadline)}</span>` 
-			: `<span class="badge bg-light text-dark ">${task.category.name}</span>`;	
+			? `<span class="badge ${isOverdue ? 'bg-danger text-light' : 'bg-light text-dark'}">${formatDateFromIso(task.deadline)}</span>` 
+			: `<span class="badge bg-light text-dark">${task.category.name}</span>`;
 
 	    const checkbox = showToggle
-						? `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''}/>`
-						: `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''} disabled/>`;
-							
+		= `<input type="checkbox" class="form-check-input me-2" data-id="${task.id}" data-bs-toggle="modal" data-bs-target="#doneModal" ${task.done ? 'checked' : ''} ${task.done ? 'disabled' : ''}/>`
+						
+		const contextBadges = task.contexts.map(ctx =>
+						  `<span class="badge bg-secondary me-1">${ctx.text}</span>`
+		).join('');
+						
 		const taskCard = $(`
 			<div class="task-card d-flex justify-content-between align-items-center mb-2 ${statusClass}" 
 				data-bs-toggle="modal" data-bs-target="#taskModal" data-id="${task.id}">
@@ -133,6 +131,7 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 					${checkbox}${task.description}
 				</div>
 				<div class="d-flex gap-1">
+				  ${contextBadges}
 				  ${isProject}
 				  ${badge}
 				</div>
@@ -163,6 +162,10 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 export function openEditModal(tarefaId) {
 	$('#taskForm')[0].reset();
 	
+	$('#categorymodal').select2({
+	   width: '100%'
+	 });
+
 	const fromProject = $('body').attr('data-from-project') === 'true';
 	 if (fromProject) {
 	   $('#backToProjectBtn').removeClass('d-none');
@@ -199,6 +202,15 @@ export function openEditModal(tarefaId) {
 				loadProjectOptions();
 		}
 		
+		$('#contexts').empty().trigger('change'); 
+
+		if (task.contexts && task.contexts.length > 0) {
+		  const newOptions = task.contexts.map(c =>
+		    new Option(c.text, c.id, true, true)
+		  );
+		  $('#contexts').append(newOptions).trigger('change');
+		}
+		
 		if (task.done) {
 		      $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', true);
 		      $('#completedWarning').removeClass('d-none');
@@ -210,8 +222,9 @@ export function openEditModal(tarefaId) {
 		      $('#reopenTaskBtn').addClass('d-none');
 			  $('#saveChangesBtn').removeClass('d-none'); 
 		    }
+			
+		$('#categorymodal').val(task.category.id || '').trigger('change');
 
-		$('#categorymodal').val(task.category?.id || '');
 		$('#taskId').data('id', task.id);
 	})
 		.fail(function() {
@@ -226,7 +239,6 @@ export function deleteTask(taskId) {
         url: `/api/tasks/${taskId}`,
         type: 'DELETE',
         success: function() {   
-            console.log('Tarefa excluída com sucesso.');
 			loadAllTasksForSidebarCount();
 			setupSidebarNavigation();
 		
@@ -245,22 +257,39 @@ export function updateDone(taskId) {
 		url: `/api/tasks/${taskId}/complete`,
 		method: 'PATCH',
 		success: function() {
-			console.log('Tarefa marcada como feita:', taskId);
 			loadAllTasksForSidebarCount();
 			setupSidebarNavigation();
 			showCategoryToast("Tarefa Concluída!")
 			
 		},
 		error: function(xhr, status, error) {
-			console.log('Erro ao atualizar tarefa feita:', error, xhr, status);
+			console.error('Erro ao atualizar tarefa feita:', error, xhr, status);
 			alert('Ocorreu um erro ao tentar atualizar a tarefa.');
+		}
+	});
+}
+
+export function removeProjectFromTask(taskId) {
+
+	$.ajax({
+		url: `/api/tasks/${taskId}/remove-project`,
+		method: 'PATCH',
+		success: function() {
+			loadAllTasksForSidebarCount();
+			loadProjectOptions();
+			setupSidebarNavigation();
+			showCategoryToast("Tarefa desvinculada do projeto!")
+		},
+		error: function(xhr, status, error) {
+			console.log('Erro ao remover tarefa:', error, xhr, status);
+			alert('Ocorreu um erro ao tentar remover a tarefa.');
 		}
 	});
 }
 
 export function updateTask(taskId, updatedTask) {
 	
-	  const originalCategory = $('#taskModal').data('originalCategory');
+	 const originalCategory = $('#taskModal').data('originalCategory');
 	  
     $.ajax({
         url: `/api/tasks/${taskId}`,
@@ -272,17 +301,12 @@ export function updateTask(taskId, updatedTask) {
 			$(`.task-card[data-id="${taskId}"]`).remove();
 			const newCategory = $('#categorymodal').val();
 			$('#taskModal').modal('hide');
-			console.log(originalCategory);
-			console.log(newCategory);
 			if (originalCategory !== newCategory) {
 				const newCategoryName = $('#categorymodal option:selected').text();
 				showCategoryToast(`A tarefa foi movida para <strong>${newCategoryName}</strong>`);	 
 			}
-
 			loadAllTasksForSidebarCount();
 			setupSidebarNavigation();
-
-			
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log("Erro:", textStatus, errorThrown, jqXHR);
@@ -298,11 +322,8 @@ export function createTask(text) {
 		contentType: 'application/json',
 		data: JSON.stringify({ description: text }),
 		success: function() {
-			console.log('Tarefa criada');
-
 			loadAllTasksForSidebarCount();
-			setupSidebarNavigation();
-			
+			setupSidebarNavigation();	
 		},
 		error: function() {
 			alert('Erro ao criar tarefa');
@@ -315,7 +336,6 @@ export function createTask(text) {
 }
 
  function autocompleteSubjects(){
-	
 	$.ajax({
 	    url: '/api/tasks/subjects',
 	    method: 'GET',
@@ -326,7 +346,6 @@ export function createTask(text) {
 	        });
 	    }
 	});
-	
 	$("#subjectmodal").on("focus", function () {
 	    $(this).autocomplete("search", "");
 	});
@@ -353,14 +372,43 @@ export function reopenTask(taskId){
 	
 }
 
+export function loadTasksByContext(){
+	$('#navsearch').on('change', function () {
+	  const selectedContexts = $(this).val(); 
+	  if (!selectedContexts || selectedContexts.length === 0) {
+	      setupSidebarNavigation();
+	      return;
+	    }
+		$('#categoryTitle').html('<i class="bi bi-search me-2"></i>Por Contexto');
+
+	  $.ajax({
+	    url: '/api/tasks/by-contexts',
+	    method: 'GET',
+	    data: { contextIds: selectedContexts },
+	    success: function (response) {
+	      renderTasks({
+				tasks: response,
+				showDone: null,
+				showToggle: true
+			}); 
+	    },
+		error: function () {
+			alert('Erro ao carregar contextos.');
+		}
+	  });
+	});
+	
+
+}
+
 function showCategoryToast(message = "Categoria alterada!") {
-  const toastEl = document.getElementById('categoryToast');
-  const toastBody = document.getElementById('categoryToastBody');
+	const toastEl = document.getElementById('categoryToast');
+	const toastBody = document.getElementById('categoryToastBody');
 
-  toastBody.innerHTML = `<i class="bi bi-lightbulb me-2 fs-4"></i> ${message}`;
+	toastBody.innerHTML = `<i class="bi bi-lightbulb me-2 fs-4"></i> ${message}`;
 
-  const toast = new bootstrap.Toast(toastEl);
-  toast.show();
+	const toast = new bootstrap.Toast(toastEl);
+	toast.show();
 }
 
 

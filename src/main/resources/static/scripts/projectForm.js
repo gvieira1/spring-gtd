@@ -9,7 +9,6 @@ export function initProjectModal() {
 	  $('#projectModalBody').attr('data-id', projectId); 
 	});
 	
-	
 	$('#addTaskBtn').on('click', function() {
 		const inputText = $('#newTask').val().trim();
 		const projectId = $('#projectModalBody').data('id'); 

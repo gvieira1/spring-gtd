@@ -1,6 +1,6 @@
 
 import { updateSwitchLabel } from './helpers.js';
-import { defineCategory } from './api/categorias.js';
+import { defineCategory } from './api/category.js';
 
 export function initializeSwitches() {
     $('.form-check-input').each(function() {

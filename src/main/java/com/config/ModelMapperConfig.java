@@ -43,9 +43,8 @@ public class ModelMapperConfig {
                 using(ctx -> new EstimatedTimeDTO()).map(source.getCategoryId(), destination.getEstimatedTime());
                 using(ctx -> new SimpleUserDTO()).map(source.getUserId(), destination.getUser().getId());
                 using(ctx -> new SimpleCategoryDTO()).map(source.getCategoryId(), destination.getCategory().getId());
-                
-                
                 using(ctx -> new SimpleProjectDTO()).map(source.getProjectId(), destination.getProject().getId());
+                
             }
         });
        

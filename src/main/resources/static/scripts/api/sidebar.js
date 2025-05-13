@@ -40,7 +40,7 @@ export function setupSidebarNavigation() {
 		if (loaderFn) loaderFn(categoryName);
 	};
 
-	if (location.pathname === '/pages/dashboard.html') {
+	if (location.pathname === '/pages/home.html') {
 		checkAndNotifyUpcomingTasks();
 
 		const defaultPath = '/categorias/caixa-de-entrada';

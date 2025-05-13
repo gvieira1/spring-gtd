@@ -2,6 +2,7 @@ package com.model.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
 import com.model.dto.ActivityStatusDTO;
+import com.model.dto.ContextDTO;
 import com.model.dto.CourseDTO;
 import com.model.dto.EstimatedTimeDTO;
 import com.model.dto.GroupedTasksResponseDTO;
@@ -22,11 +24,13 @@ import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.dto.WeeklyReportDTO;
 import com.model.entity.CategoryEntity;
+import com.model.entity.Context;
 import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.model.entity.User;
 import com.repository.CategoryRepository;
+import com.repository.ContextRepository;
 import com.repository.EstimatedTimeRepository;
 import com.repository.TaskRepository;
 @Service
@@ -38,13 +42,15 @@ public class TaskService {
 	private final CategoryRepository categoryRepository;
 	private final UserService userService;
 	private final EstimatedTimeRepository estTimeRepository;
+	private final ContextRepository contextRepository;
 	
-	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository,EstimatedTimeRepository estTimeRepository, UserService userService) {
+	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository,EstimatedTimeRepository estTimeRepository, ContextRepository contextRepository, UserService userService) {
 		this.taskRepository = taskRepository;
 		this.projectService = projectService;
 		this.modelMapper = modelMapper;
 		this.categoryRepository = categoryRepository;
 		this.estTimeRepository = estTimeRepository;
+		this.contextRepository = contextRepository;
 		this.userService = userService;
 	}
 
@@ -69,9 +75,11 @@ public class TaskService {
 		User user = userService.getAuthenticatedUser();	
 		List<Task> tasks = taskRepository.findByUserId(user.getId());
 		return tasks.stream()
-                .map(task -> modelMapper.map(task, TaskResponseDTO.class))
+                //.map(task -> modelMapper.map(task, TaskResponseDTO.class))
+                .map(this::toDTO)
                 .collect(Collectors.toList());
 	}
+
 	
 	public TaskResponseDTO save(TaskRequestDTO dto) {
 		
@@ -137,6 +145,12 @@ public class TaskService {
 		if (updatedDTO.getProjectId() != null) {
 			projectService.addExistingTaskToProject(updatedDTO.getProjectId(), id);
 		}
+		
+		if (updatedDTO.getContextIds() != null) {
+			List<Context> contexts = contextRepository.findAllById(updatedDTO.getContextIds());
+			existingTask.setContexts(contexts);
+		}
+		
 		
 		//getDone só pode ser definido por método específico, que deve chegar aqui já ok
 		if (existingTask.getDone() == null || !existingTask.getDone()) {
@@ -343,6 +357,22 @@ public class TaskService {
 		return taskRepository.findDistinctSubjectsByUser(user);
 	}
 
+	public List<String> findDistinctContexts() {
+		User user = userService.getAuthenticatedUser();	
+		return taskRepository.findDistinctContextsByUser(user);
+	}
+	
+	public List<TaskResponseDTO> findDTOsByUserAndContexts(List<Long> contextIds) {
+	    User user = userService.getAuthenticatedUser();
+	    if (contextIds == null || contextIds.isEmpty()) {
+	        return Collections.emptyList();
+	    }
+
+	    List<Task> tasks = taskRepository.findDistinctByUserAndContextsIdIn(user, contextIds);
+	    return tasks.stream()
+	    		.map(this::toDTO)
+	    		.toList();
+	}
 	
 	public TaskResponseDTO toDTO(Task task) {
 	    TaskResponseDTO responseDTO = modelMapper.map(task, TaskResponseDTO.class);
@@ -359,12 +389,29 @@ public class TaskService {
 	    EstimatedTimeDTO estTimeDTO = responseDTO.getEstimatedTime();
 	    estTimeDTO.setTime(estTime.getTime());
 	    
+	    List<ContextDTO> contexts = task.getContexts().stream()
+	            .map(c -> new ContextDTO(c.getId(), c.getName()))
+	            .toList();
+	    responseDTO.setContexts(contexts);
+	        
 	    return responseDTO;
 	}
 
 
     public Task toEntity(TaskRequestDTO taskRequestDTO) {
-        return modelMapper.map(taskRequestDTO, Task.class);
+    	Task task =  modelMapper.map(taskRequestDTO, Task.class);
+        
+        if (taskRequestDTO.getContextIds() != null && !taskRequestDTO.getContextIds().isEmpty()) {
+            List<Context> contexts = taskRequestDTO.getContextIds().stream()
+                    .map(id -> contextRepository.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("Contexto não encontrado: " + id)))
+                    .toList();
+            task.setContexts(contexts);
+        }
+        
+        return task;
     }
+
+
 
 }

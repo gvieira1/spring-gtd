@@ -1,6 +1,7 @@
 package com.model.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -22,4 +23,6 @@ public class TaskRequestDTO {
     private Long userId;
     private Long categoryId;
     private Long projectId;
+    private List<Long> contextIds;
+
 }

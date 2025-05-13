@@ -14,6 +14,6 @@ public class SpaController {
         "/relatorio"
     })
     public String redirect() {
-        return "forward:/pages/dashboard.html";
+        return "forward:/pages/home.html";
     }
 }

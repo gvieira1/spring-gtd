@@ -12,8 +12,7 @@ export function loadWeeklyReport() {
 			   Média diária de tarefas: 
 			   <span id="mediaDiaria" class="fw-bold text-light"> </span>	   
 			   <i class="bi bi-question-circle fs-6 " data-bs-toggle="tooltip" data-bs-placement="top" title="Com dados dos últimos 7 dias"></i>
-			 </p>
-			 
+			 </p>			 
 		  </div>
 
 		  <div class="row gx-2 gy-2 ">
@@ -43,7 +42,6 @@ export function loadWeeklyReport() {
 		    </div>
 		  </div>
 		</div>
-
 	`;
 
 	$.ajax({
@@ -70,16 +68,18 @@ export function loadWeeklyReport() {
 			const roxo2 = '#6667ab';
 			const roxo3 = '#a6a1d4';
 			const roxoClaro = '#c9c2e6';
+			
 
-			const formattedLabels = Object.keys(data.tasksCompletedByDay).map(formatDateFromIso);
-
+			const sortedKeys = Object.keys(data.tasksCompletedByDay).sort((a, b) => new Date(a) - new Date(b));
+			const formattedLabels = sortedKeys.map(formatDateFromIso);
+			const orderedData = sortedKeys.map(key => data.tasksCompletedByDay[key]);
 			new Chart(document.getElementById("lineChart"), {
 				type: 'line',
 				data: {
 					labels: formattedLabels,
 					datasets: [{
 						label: 'Concluídas',
-						data: Object.values(data.tasksCompletedByDay),
+						data: orderedData,
 						borderColor: roxo1,
 						backgroundColor: roxoClaro,
 						fill: true,

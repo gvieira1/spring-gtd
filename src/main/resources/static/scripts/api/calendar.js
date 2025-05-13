@@ -2,37 +2,31 @@
 import { openEditModal } from './task.js';
 
 
-
 export function loadCalendarApi() {
 
 	$('#categoryTitle').empty();
 	$('#taskList').html(` 
 		<h2 class="fw-bold mb-4"><i class="bi bi-calendar-check-fill"></i> Calendário</h2>
 		<div id="calendarContainer">
-									<div class="d-flex justify-content-between mb-1">
-										<label class="fw-semibold bg-light p-2 rounded"> <span
-											id="currentMonth"></span>
-										</label>
-										<div>
-											<button id="prevMonth" class="btn btn-light btn-modal-bg">Anterior</button>
-											<button id="nextMonth" class="btn btn-light btn-modal-bg">Próximo</button>
-										</div>
-									</div>
-									<div id="calendar"></div>
+			<div class="d-flex justify-content-between mb-1">
+				<label class="fw-semibold bg-light p-2 rounded"> <span id="currentMonth"></span> </label>
+			<div>
+			<button id="prevMonth" class="btn btn-light btn-modal-bg">Anterior</button>
+			<button id="nextMonth" class="btn btn-light btn-modal-bg">Próximo</button>
 		</div>
-								
-		`);
-
-								
+		</div>
+			<div id="calendar"></div>
+		</div>								
+		`);	
+	
 	const calendar = new tui.Calendar('#calendar', {
 		usageStatistics: false,
 		language: 'pt',
 		defaultView: 'month',
 		taskView: false,
-		scheduleView: true,
+		scheduleView: ['allday'],
 		useDetailPopup: false,
-		useCreationPopup: false,
-		    
+		useCreationPopup: false,		    
 		month: {
 		    startDayOfWeek: 0,
 		    dayNames: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -65,7 +59,6 @@ export function loadCalendarApi() {
 	  
 	});
 	
-	
 	$('#prevMonth').on('click', () => {
 	  calendar.prev();
 	  updateCurrentMonth();
@@ -75,7 +68,6 @@ export function loadCalendarApi() {
 	  calendar.next();
 	  updateCurrentMonth();
 	});
-
 	
 	function updateCurrentMonth() {
 		if (!calendar) return; 
@@ -85,8 +77,7 @@ export function loadCalendarApi() {
 		  $('#currentMonth').text(`${mes.toString().padStart(2, '0')}/${ano}`);
 		}
 
-	updateCurrentMonth();
-	
+	updateCurrentMonth();	
 
 	$.ajax({
 		url: '/api/calendar',
@@ -131,10 +122,7 @@ export function loadCalendarApi() {
 			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar calendário.</div>');
 		}
 	});
-	
-	
-	
-	
+		
 }
 
 

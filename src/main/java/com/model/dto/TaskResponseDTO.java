@@ -1,5 +1,6 @@
 package com.model.dto;
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.Data;
 
@@ -12,7 +13,8 @@ public class TaskResponseDTO {
     private String subject;
     private Boolean done;
     private Boolean delegated;
-
+    
+    private List<ContextDTO> contexts;
     private EstimatedTimeDTO estimatedTime;
     private SimpleUserDTO user;
     private SimpleCategoryDTO category;

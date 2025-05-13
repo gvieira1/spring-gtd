@@ -2,28 +2,26 @@
 
 html, body {
 	height: 100%;
-	background-color: #9c9ae3;
 	min-height: 100vh; 
 	font-family: 'Lato', sans-serif;
+	margin: 0;
+	padding: 0;
 }
 
-
-body {
-	display: -ms-flexbox;
-	display: -webkit-box;
+body.index-page {
+	background-color: #9c9ae3;
 	display: flex;
-	-ms-flex-align: center;
-	-ms-flex-pack: center;
-	-webkit-box-align: center;
 	align-items: center;
-	-webkit-box-pack: center;
 	justify-content: center;
-	padding-top: 0.5%;
-	padding-bottom: 0.5%;
+	padding: 0.5%;
 }
 
-.card{
-	padding: 3%;
+body.forgot-page {
+	background-color: #9c9ae3;
+}
+
+.backButton {
+	cursor: pointer;
 }
 
 .btnadd {
@@ -36,7 +34,6 @@ body {
 .btnadd:hover {
 	color: white;
 	background-color: #9c9ae3;
-	border-radius: 4px;
 }
 
 .form-signin {
@@ -68,6 +65,80 @@ body {
 	border-top-right-radius: 0;
 }
 
-.backButton {
-	cursor: pointer;
+.container-login {
+	max-width: 100%;
+	margin-top: 40px;
+	box-shadow: 2px 8px 22px rgba(0, 0, 0, 0.1);
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+}
+
+.left-panel {
+	background-color: #6667ab;
+	color: white;
+	padding: 50px 30px;
+	text-align: center;
+	width: 50%;
+}
+
+.left-panel h2 {
+	font-weight: 700;
+}
+
+.left-panel p {
+	margin-top: 15px;
+	font-size: 14px;
+}
+
+.right-panel {
+	background-color: #fff;
+	padding: 40px 30px;
+	width: 50%;
+}
+
+.form-group {
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.form-group i {
+	position: absolute;
+	left: 15px;
+	top: 11px;
+	color: #999;
+}
+
+.form-control {
+	border-radius: 30px;
+	padding-left: 45px;
+}
+
+.btn-custom {
+	background-color: transparent;
+	border: 2px solid #6667ab;
+	color: black;
+	border-radius: 30px;
+	transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+	background-color: #6667ab;
+	color: white;
+}
+
+@media (max-width: 768px) {
+	.container-login {
+		flex-direction: column;
+		box-shadow: none;
+	}
+
+	body.forgot-page {
+		background-color: #6667ab;
+	}
+
+	.left-panel, .right-panel {
+		width: 100%;
+	}
 }

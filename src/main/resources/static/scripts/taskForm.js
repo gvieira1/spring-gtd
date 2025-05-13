@@ -1,7 +1,5 @@
 
-
-
-import { deleteTask, updateDone, updateTask, createTask, reopenTask } from './api/task.js';
+import { deleteTask, updateDone, updateTask, createTask, reopenTask, removeProjectFromTask } from './api/task.js';
 import { createProject } from './api/project.js';
 import { formatDateToIso } from './helpers.js';
 
@@ -17,7 +15,6 @@ export function initDeleteModalHandlers() {
 	$('#confirmDelete').on('click', function() {
 		const taskId = $('#deleteModal').data('id');
 		const type = $('#deleteModal').data('delete-type');
-		console.log(taskId);
 
 		if (taskId && type === 'task') {
 			deleteTask(taskId);
@@ -94,11 +91,11 @@ export function initUpdateForm(){
 	        estimatedTimeId: $('#estimated_time').val(),
 	        subject: $('#subjectmodal').val(),
 	        delegated: $('#formSwitch2').prop('checked'),
+			contextIds: $('#contexts').val(),
 	        categoryId: $('#categorymodal').val(),
 			projectId: $('#getprojects').val()
 	    };
 
-		console.log("Dados enviados para o update:", updatedTask);
 	    updateTask(taskId, updatedTask);
 	});
 }
@@ -123,7 +120,6 @@ function validateDeadline(inputId, errorId) {
         $(`#${errorId}`).removeClass('d-none');
         return { valid: false };
     }
-
     return { valid: true, value: formatDateToIso(rawValue) };
 }
 
@@ -162,7 +158,6 @@ export function onReopenTask(){
 	
 	$('#reopenTaskBtn').on('click', function () {
 	  const taskId = $('#taskModal').data('id');
-	  console.log(taskId);
 	  
 	  $('#taskForm input, #taskForm select, #taskForm textarea').prop('disabled', false);
 	  $('#completedWarning').addClass('d-none');
@@ -171,6 +166,13 @@ export function onReopenTask(){
 	  $('input[type="checkbox"][data-bs-toggle="modal"]').prop('checked', false);
 	  
 	  reopenTask(taskId);
+	});
+}
+
+export function removeProjectFromTaskForm(){
+	$('#unlinkProjectBtn').on('click', function () {
+		const taskId = $('#taskModal').data('id');
+		removeProjectFromTask(taskId);
 	});
 }
 

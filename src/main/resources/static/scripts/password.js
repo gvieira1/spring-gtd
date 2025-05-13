@@ -24,8 +24,7 @@ $('#resetPasswordForm').submit(function(e) {
             token: $("#token").val(),
             newPassword: $("#newPassword").val()
         }),
-        success: function(response) {
-            alert(response);
+        success: function() {
             window.location.href = "/";
         },
         error: function() {
