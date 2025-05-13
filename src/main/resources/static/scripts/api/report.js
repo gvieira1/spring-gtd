@@ -95,7 +95,7 @@ export function loadWeeklyReport() {
 			new Chart(document.getElementById('graficoAssunto'), {
 			  type: 'bar',
 			  data: {
-			    labels: Object.keys(data.tasksBySubject),
+				labels: Object.keys(data.tasksBySubject).map(label => label === '' ? 'Sem assunto' : label),
 			    datasets: [{
 			      label: 'Quantidade',
 			      data: Object.values(data.tasksBySubject),

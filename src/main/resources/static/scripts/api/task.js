@@ -1,5 +1,5 @@
 import { loadSelectOptions } from './estimatedTimes.js';
-import { formatDateFromIso } from '/scripts/helpers.js';
+import { formatDateFromIso, updateSwitchLabel } from '/scripts/helpers.js';
 import { loadAllTasksForSidebarCount, setupSidebarNavigation } from './sidebar.js'; 
 import { loadProjectOptions } from './project.js';
 
@@ -56,14 +56,50 @@ function fetchTasksFromMoodle() {
 export function loadMoodleTasks() {
 	$('#categoryTitle').text('Moodle');
 
-	fetchTasksFromMoodle()
-		.then(response => {
-			renderTasks({ tasks: response.content, showDone: false, showToggle: true });
+	$.get('/api/moodle/check-moodle-sync')
+		.done(function (isSynced) {
+			if (!isSynced) {
+				$('#taskList').html(`
+					<div class="alert alert-light d-flex justify-content-between align-items-center">
+						<span class="fs-6 fw-medium">Deseja sincronizar com o Moodle usando seu e-mail cadastrado?</span>
+						<button class="btn btn-outline-secondary btn-modal-bg" id="syncMoodleBtn"><i class="bi bi-arrow-repeat fs-5"></i> Sincronizar</button>
+					</div>
+				`);
+
+				$('#syncMoodleBtn').on('click', function () {
+					$.post('/api/moodle/sync')
+						.done(function (msg) {
+							console.log('Sincronização com Moodle feita com sucesso:', msg);
+							loadMoodleTasks();
+						})
+						.fail(xhr => {
+							const response = xhr.responseJSON;
+							console.error('Erro ao sincronizar com Moodle:', response?.error || xhr.statusText);
+							let message = 'Erro ao verificar sincronização com o Moodle.';
+									
+							if (xhr.status === 401 && response?.error?.includes('não encontrado')) {
+								message = 'Não encontramos seu usuário no Moodle com o e-mail cadastrado. Verifique ou entre em contato com o suporte.';
+							}
+
+							$('#taskList').html(`<div class="alert alert-danger">${message}</div>`);
+							
+						});
+				});
+			} else {
+				fetchTasksFromMoodle()
+					.then(response => {
+						renderTasks({ tasks: response.content, showDone: false, showToggle: true });
+					})
+					.catch(() => {
+						$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas do Moodle.</div>');
+					});
+			}
 		})
-		.catch(() => {
-			$('#taskList').html('<div class="alert alert-danger">Erro ao carregar tarefas do Moodle.</div>');
+		.fail(function () {
+			$('#taskList').html('<div class="alert alert-danger">Erro ao verificar sincronização com o Moodle.</div>');
 		});
 }
+
 
 function fetchTasksDone() {
 	const url = `/api/tasks`;
@@ -135,7 +171,6 @@ export function renderTasks({ tasks, containerSelector = '#taskList', showDone =
 				  ${isProject}
 				  ${badge}
 				</div>
-
 			</div>
 		`);
 
@@ -182,6 +217,9 @@ export function openEditModal(tarefaId) {
 		$('#descriptionmodal').val(task.description);
 		$('#formSwitch1').prop('checked', task.priority === true);
 		$('#formSwitch2').prop('checked', task.delegated === true);
+		
+		updateSwitchLabel($('#formSwitch1'), $('#switchLabel1'));
+		updateSwitchLabel($('#formSwitch2'), $('#switchLabel2'));
 
 		if (task.deadline) {
 			const isoFormat = formatDateFromIso(task.deadline);

@@ -21,22 +21,25 @@ import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.model.entity.User;
+import com.model.mapper.TaskMapper;
 import com.repository.ProjectRepository;
 import com.repository.TaskRepository;
 
 @Service
 public class ProjectService {
 
+	private final TaskMapper taskMapper;
 	private final ProjectRepository projectRepository;
 	private final TaskRepository taskRepository;
 	private final ModelMapper modelMapper;
 	private final UserService userService;
 
-	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, ModelMapper modelMapper, UserService userService) {
+	public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, ModelMapper modelMapper, UserService userService, TaskMapper taskMapper) {
 		this.projectRepository = projectRepository;
 		this.taskRepository = taskRepository;
 		this.modelMapper = modelMapper;
 		this.userService = userService;
+		this.taskMapper = taskMapper;
 	}
 
 
@@ -51,7 +54,7 @@ public class ProjectService {
 	    Page<Task> taskPage = taskRepository.findByUserIdAndProjectId(user.getId(), projectId, pageable);
 
 	    List<TaskResponseDTO> taskResponseDTOs = taskPage.getContent().stream()
-	        .map(task -> modelMapper.map(task, TaskResponseDTO.class)) 
+	    	.map(taskMapper::toDTO)
 	        .collect(Collectors.toList());
 	    
 	    return new PageImpl<>(taskResponseDTOs, pageable, taskPage.getTotalElements());

@@ -13,11 +13,11 @@ $(document).ready(function() {
 	runPageTransition();
 	setupSidebarNavigation();
 	setInterval(loadMoodleTasks, 900000);
+	initializeSwitches();
 	configureContextSelect2('#contexts', '#taskModal');
 	configureContextSelect2('#navsearch', null, ' Filtre por contexto'); 
 	loadTasksByContext();
 	initProjectModal();
-	initializeSwitches();
 	initDeleteModalHandlers();
 	initDoneModalForm();
 	initUpdateForm();
@@ -32,10 +32,18 @@ $(document).ready(function() {
 	onReopenTask();
 });
 
+
 $.ajaxSetup({
     complete: function(xhr) {
-        if (xhr.status === 401) {
+        const ignoredPaths = ['/api/moodle/sync'];
+
+        if (
+            xhr.status === 401 &&
+            xhr.responseURL &&
+            !ignoredPaths.some(path => xhr.responseURL.includes(path))
+        ) {
             window.location.href = "/";
         }
     }
 });
+

@@ -51,4 +51,17 @@ public class MoodleSyncController {
 		User user = userService.getAuthenticatedUser();
         return ResponseEntity.ok(moodleService.syncPendingTasksFromMoodle(user, pageable));
     }
+    
+
+    @Operation(summary = "Check moodle sync")
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
+    @GetMapping("/check-moodle-sync")
+    public ResponseEntity<Boolean> checkMoodleSyncStatus() {
+        User user = userService.getAuthenticatedUser();
+        boolean isSynced = user.getMoodleUserId() != null;
+        return ResponseEntity.ok(isSynced);
+    }
+
 }

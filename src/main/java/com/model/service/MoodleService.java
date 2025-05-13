@@ -22,6 +22,7 @@ import com.model.dto.CourseDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.entity.Task;
 import com.model.entity.User;
+import com.model.mapper.TaskMapper;
 
 import io.netty.handler.timeout.TimeoutException;
 import reactor.core.publisher.Mono;
@@ -31,10 +32,13 @@ public class MoodleService {
 
     private final WebClient moodleWebClient;  
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
+    
 
-    public MoodleService(WebClient moodleWebClient, TaskService taskService) {
+    public MoodleService(WebClient moodleWebClient, TaskService taskService, TaskMapper taskMapper) {
 		this.moodleWebClient = moodleWebClient;
 		this.taskService = taskService;
+		this.taskMapper = taskMapper;
 	}
 
 	@Value("${moodle.token}") 
@@ -129,7 +133,7 @@ public class MoodleService {
                         taskService.markAsCompleted(task.getId());
                     }
 
-                    return taskService.toDTO(task);
+                    return taskMapper.toDTO(task);
 
                 } else if (!isCompletedInMoodle) {
                     return taskService.createTaskFromMoodleActivity(user, course, activity);

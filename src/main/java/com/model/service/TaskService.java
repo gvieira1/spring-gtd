@@ -8,18 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
 import com.model.dto.ActivityStatusDTO;
-import com.model.dto.ContextDTO;
 import com.model.dto.CourseDTO;
-import com.model.dto.EstimatedTimeDTO;
 import com.model.dto.GroupedTasksResponseDTO;
-import com.model.dto.SimpleCategoryDTO;
 import com.model.dto.TaskRequestDTO;
 import com.model.dto.TaskResponseDTO;
 import com.model.dto.WeeklyReportDTO;
@@ -29,29 +25,24 @@ import com.model.entity.EstimatedTime;
 import com.model.entity.Project;
 import com.model.entity.Task;
 import com.model.entity.User;
-import com.repository.CategoryRepository;
+import com.model.mapper.TaskMapper;
 import com.repository.ContextRepository;
-import com.repository.EstimatedTimeRepository;
 import com.repository.TaskRepository;
 @Service
 public class TaskService {
 
 	private final TaskRepository taskRepository;
 	private final ProjectService projectService;
-	private final ModelMapper modelMapper;
-	private final CategoryRepository categoryRepository;
 	private final UserService userService;
-	private final EstimatedTimeRepository estTimeRepository;
+	private final TaskMapper taskMapper;
 	private final ContextRepository contextRepository;
 	
-	public TaskService(TaskRepository taskRepository, ProjectService projectService, ModelMapper modelMapper, CategoryRepository categoryRepository,EstimatedTimeRepository estTimeRepository, ContextRepository contextRepository, UserService userService) {
+	public TaskService(TaskRepository taskRepository, ProjectService projectService, UserService userService, TaskMapper taskMapper, ContextRepository contextRepository) {
 		this.taskRepository = taskRepository;
 		this.projectService = projectService;
-		this.modelMapper = modelMapper;
-		this.categoryRepository = categoryRepository;
-		this.estTimeRepository = estTimeRepository;
-		this.contextRepository = contextRepository;
 		this.userService = userService;
+		this.taskMapper = taskMapper;
+		this.contextRepository = contextRepository;
 	}
 
 	public Page<TaskResponseDTO> getFilteredTasks(Boolean withoutProject, String category, Pageable pageable) {
@@ -68,15 +59,14 @@ public class TaskService {
 		    }
 		}
 		
-		return tasks.map(this::toDTO);
+		return tasks.map(taskMapper::toDTO);
 	}
 
 	public List<TaskResponseDTO> getTasksByUserId(){
 		User user = userService.getAuthenticatedUser();	
 		List<Task> tasks = taskRepository.findByUserId(user.getId());
 		return tasks.stream()
-                //.map(task -> modelMapper.map(task, TaskResponseDTO.class))
-                .map(this::toDTO)
+                .map(taskMapper::toDTO)
                 .collect(Collectors.toList());
 	}
 
@@ -91,7 +81,7 @@ public class TaskService {
 	
 		User user = userService.getAuthenticatedUser();	
 
-		Task task = toEntity(dto);
+		Task task = taskMapper.toEntity(dto);
 		task.setCategory(category);
 		task.setUser(user);
 		task.setEstimatedTime(estTime);
@@ -102,14 +92,14 @@ public class TaskService {
 			projectService.updateProjectStatus(saved.getProject());
 		}
 
-		return toDTO(saved);
+		return taskMapper.toDTO(saved);
 	}
 
 	public TaskResponseDTO getTaskById(Long id) {
 		User user = userService.getAuthenticatedUser();	
 		Task task = taskRepository.findByUserIdAndId(user.getId(), id)
 				.orElseThrow(() -> new ResourceNotFoundException("Tarefa não encontrada: " + id));
-		return toDTO(task);
+		return taskMapper.toDTO(task);
 	}
 
 	public TaskResponseDTO updateTask(Long id, TaskRequestDTO updatedDTO) {
@@ -163,7 +153,7 @@ public class TaskService {
 	        projectService.updateProjectStatus(saved.getProject());
 	    }
 
-	    return toDTO(saved);
+	    return taskMapper.toDTO(saved);
 	}
 
 	private void defineCategory(Task task) {
@@ -202,7 +192,7 @@ public class TaskService {
 	    Map<String, List<TaskResponseDTO>> groupedTasks = tasksPage
 	    															.getContent()
 	    															.stream()
-	    															.map(task -> modelMapper.map(task, TaskResponseDTO.class)) 
+	    															.map(taskMapper::toDTO) 
 	    															.collect(Collectors.groupingBy(taskDTO -> taskDTO.getCategory().getName()));
 
 	    GroupedTasksResponseDTO response = new GroupedTasksResponseDTO();
@@ -229,7 +219,7 @@ public class TaskService {
 	        projectService.updateProjectStatus(previousProject);
 	    }
 
-	    return toDTO(saved);
+	    return taskMapper.toDTO(saved);
 	}
 
 	public TaskResponseDTO markAsCompleted(Long taskId) {
@@ -238,7 +228,7 @@ public class TaskService {
 				.orElseThrow(() -> new ResourceNotFoundException("task não encontrada: " + taskId));
 
 		if (Boolean.TRUE.equals(task.getDone())) {
-			return toDTO(task);
+			return taskMapper.toDTO(task);
 		}
 
 		task.setDone(true);
@@ -249,7 +239,7 @@ public class TaskService {
 			projectService.updateProjectStatus(task.getProject());
 		}
 
-		return toDTO(saved);
+		return taskMapper.toDTO(saved);
 	}
 	
 	public void reopenTask(Long taskId) {
@@ -269,8 +259,6 @@ public class TaskService {
 	    if (task.getProject() != null) {
 			projectService.reopenProject(task.getProject());
 		}
-	    
-	   
 
 	}
 
@@ -278,11 +266,11 @@ public class TaskService {
 		Optional<Task> existingTask = taskRepository.findByUserIdAndMoodleCourseIdAndMoodleCmid(user.getId(), course.getId(), (long) activity.getCmid());
 
 		if (existingTask.isPresent()) {
-			return toDTO(existingTask.get());
+			return taskMapper.toDTO(existingTask.get());
 		} else {
 			Task task = this.toTaskFromMoodle(course, activity, user);
 			taskRepository.save(task);
-			return toDTO(task);
+			return taskMapper.toDTO(task);
 		}
 	
 	}
@@ -370,48 +358,10 @@ public class TaskService {
 
 	    List<Task> tasks = taskRepository.findDistinctByUserAndContextsIdIn(user, contextIds);
 	    return tasks.stream()
-	    		.map(this::toDTO)
+	    		.map(taskMapper::toDTO)
 	    		.toList();
 	}
 	
-	public TaskResponseDTO toDTO(Task task) {
-	    TaskResponseDTO responseDTO = modelMapper.map(task, TaskResponseDTO.class);
-	    
-	    CategoryEntity category = categoryRepository.findById(task.getCategory().getId())
-	            .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
-
-	    SimpleCategoryDTO categoryDTO = responseDTO.getCategory();
-	    categoryDTO.setName(category.getName());  
-
-	    EstimatedTime estTime = estTimeRepository.findById(task.getEstimatedTime().getId())
-	    		.orElseThrow(() -> new ResourceNotFoundException("Categoria de tempo não encontrada"));
-	    
-	    EstimatedTimeDTO estTimeDTO = responseDTO.getEstimatedTime();
-	    estTimeDTO.setTime(estTime.getTime());
-	    
-	    List<ContextDTO> contexts = task.getContexts().stream()
-	            .map(c -> new ContextDTO(c.getId(), c.getName()))
-	            .toList();
-	    responseDTO.setContexts(contexts);
-	        
-	    return responseDTO;
-	}
-
-
-    public Task toEntity(TaskRequestDTO taskRequestDTO) {
-    	Task task =  modelMapper.map(taskRequestDTO, Task.class);
-        
-        if (taskRequestDTO.getContextIds() != null && !taskRequestDTO.getContextIds().isEmpty()) {
-            List<Context> contexts = taskRequestDTO.getContextIds().stream()
-                    .map(id -> contextRepository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("Contexto não encontrado: " + id)))
-                    .toList();
-            task.setContexts(contexts);
-        }
-        
-        return task;
-    }
-
 
 
 }

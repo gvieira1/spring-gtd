@@ -194,7 +194,3 @@ export function loadProjectOptions(selectedId = null) {
     });
 }
 
-
-
-
-
