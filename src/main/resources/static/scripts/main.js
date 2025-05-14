@@ -34,16 +34,18 @@ $(document).ready(function() {
 
 
 $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        xhr._requestURL = settings.url;
+    },
     complete: function(xhr) {
         const ignoredPaths = ['/api/moodle/sync'];
-
-        if (
-            xhr.status === 401 &&
-            xhr.responseURL &&
-            !ignoredPaths.some(path => xhr.responseURL.includes(path))
-        ) {
+        const requestURL = xhr._requestURL; 
+        console.log("AJAX Complete → status:", xhr.status, "URL:", requestURL);
+        if (xhr.status === 401 && requestURL && !ignoredPaths.some(path => requestURL.includes(path))){
+            console.log("Redirecionando para login...");
             window.location.href = "/";
         }
     }
 });
+
 
