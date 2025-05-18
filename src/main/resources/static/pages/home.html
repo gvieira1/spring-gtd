@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademicGTD</title>
+    <link rel="icon" href="../images/favicon.ico" type="image/svg+xml">	
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+     <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+
+    <!-- DESKTOP VIEW -->
+    <div class="container-fluid d-none d-md-block">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <h5><i class="bi bi-mortarboard-fill"></i>  <a class="text-decoration-none text-dark" href="/pages/home.html">AcademicGTD</a></h5>
+                <hr/>
+                <p class="fw-bold" >Caixa de Entrada</p>
+                <p class="clickable-icon history-btn" data-href="/categorias/caixa-de-entrada" data-categoria="Caixa de Entrada"><i class="bi bi-inbox-fill "></i> Capture 
+                <span class="task-count text-muted ms-2" data-category="Caixa de Entrada" style="display: none;"></span>
+                </p>
+                
+                <p class="fw-bold mt-3 ">Categorias</p>
+                <p class="clickable-icon history-btn" data-href="/categorias/quando-puder" data-categoria="Quando Puder"><i class="bi bi-arrow-right-circle "></i> Quando Puder
+                <span class="task-count text-muted ms-2" data-category="Quando Puder" style="display: none;"></span>
+                </p>
+                <p class="clickable-icon history-btn" data-href="/categorias/agendado" data-categoria="Agendado"><i class="bi bi-calendar-event "></i> Agendados
+                 <span class="task-count text-muted ms-2" data-category="Agendado" style="display: none;"></span>
+                </p>             
+                <p class="clickable-icon history-btn" data-href="/categorias/aguardando-resposta" data-categoria="Aguardando Resposta"><i class="bi bi-hourglass-split "></i> Aguardando
+                <span class="task-count text-muted ms-2 " data-category="Aguardando Resposta" style="display: none;"></span>
+                </p>          
+                <p class="clickable-icon history-btn" data-href="/categorias/arquivo" data-categoria="Arquivo"><i class="bi bi-archive "></i> Arquivo
+                 <span class="task-count text-muted ms-2" data-category="Arquivo" style="display: none;"></span>
+                 </p>     
+                 
+                  <p class="fw-bold mt-3 history-btn">Outros</p>                  
+                  <p class="clickable-icon history-btn" data-href="/projetos" data-source="projetos"><i class="bi bi-kanban "></i> Projetos
+                 <span class="text-muted ms-2" data-category="Projeto" style="display: none;"></span>
+                 </p>       
+                  
+               <p class="clickable-icon history-btn" data-href="/categorias/moodle" data-source="moodle" ><img width="18" height="18" src="https://img.icons8.com/material/18/moodle.png" alt="moodle" /> Do Moodle</p>
+				 
+			   <p class="clickable-icon history-btn" data-href="/categorias/concluidas" data-source="concluidas"><i class="bi bi-check-circle"></i> Concluídas</p>
+                 
+               <p class="fw-bold mt-3 history-btn">Contexto</p>
+               <select id="navsearch" class="form-control form-control-sm me-2" multiple="multiple" aria-label="Filtro"></select>
+              	
+            </div>
+
+            <!-- Main content -->
+            <div class="col-md-10 ms-auto">
+                <nav class="d-flex justify-content-between align-items-center p-3 bg-white border-bottom w-100">
+                    <div>
+                        <a class="me-2 text-decoration-none link-bg history-btn" data-href="/categorias/pendentes" data-source="pendentes">Tarefas Pendentes</a>
+                        <a class="me-2 text-decoration-none link-bg history-btn" data-href="/relatorio" data-source="relatorio">Dashboard</a>
+                        <a class="text-decoration-none  link-bg history-btn" data-href="/calendario" data-source="calendario">Calendário</a>
+                    </div>
+                    <div class="d-flex ">
+                        <i class="bi bi-bell-fill me-3 clickable-icon "  data-bs-toggle="modal" data-bs-target="#configNotifications"></i>
+                    </div>
+                </nav>
+
+                <div class="container mt-3">
+						<div class="input-group mb-3">
+							<input type="text" class="form-control" placeholder="Capture uma nova tarefa..." id="newAction" required />
+							<button class="btn btn-dark btn-bg" data-bs-toggle="modal" data-bs-target="#taskOrProjectModal" id="addBtn" disabled>Adicionar</button>
+						</div>
+					
+						<h4 class="fw-bold" id="categoryTitle"></h4>
+						<div id="taskList" class="mt-4"></div>
+				</div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Projeto ou Tarefa -->
+    <div>
+        <div class="modal fade" id="taskOrProjectModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">                     
+                    <div class="modal-body text-center p-4">
+                    	<i class="bi bi-question-square-fill fs-1 mb-3"></i>
+                        <h5 class="mt-3 mb-5 text-muted fw-semibold ">Como deseja organizar esta ação?</h5>
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="button" class="btn btn-outline-secondary shadow-sm btn-modal-bg"
+                                id="convertToProject">
+                                <strong>Organizar como Projeto</strong>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary shadow-sm btn-modal-bg "
+                            	id="submitAsTask">
+                                <strong>Adicionar como Tarefa única</strong>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <!-- Modal Configura Notificações -->
+    <div>
+        <div class="modal fade" id="configNotifications" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content shadow-lg rounded-4">
+                    <div class="modal-header ">
+                        <h5 class="modal-title text-dark"><i class="bi bi-bell "></i> Configuração de Notificações</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body ">
+                        <p class="mt-3 mb-3 text-muted fw-semibold ">Personalize como você gostaria de ser notificado(a)
+                            sobre o prazo de suas tarefas<br><br></p>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notSwitch1">
+                                <label class="not-check-label" for="notSwitch1" id="notSwitchLabel1">Notificações
+                                    Web</label>
+                            </div>
+                        </div>
+                        <div class="mb-2 mt-4">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary dropdown-toggle  btn-modal-bg btn-notif"
+                                    data-bs-toggle="dropdown" aria-expanded="false" disabled>Me notifique...
+                                </button>
+                                <ul class="dropdown-menu" id="notificationDaysOptions">
+   									<li><a class="dropdown-item" href="#" data-value="1">1 dia antes</a></li>
+									<li><a class="dropdown-item" href="#" data-value="2">2 dias antes</a></li>
+									<li><a class="dropdown-item" href="#" data-value="3">3 dias antes</a></li>
+									<li><a class="dropdown-item" href="#" data-value="7">7 dias antes</a></li>
+								</ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+   						 <button id="saveNotificationSettings" class="btn btn-outline-secondary btn-modal-bg">Salvar</button>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para edição de tarefa -->
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between ">
+                    <h5 class="modal-title" id="taskModalLabel"></h5>  
+                <div>
+                    <button type="button" class="btn d-none " id="backToProjectBtn"><i class="bi bi-arrow-left"></i></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeTaskModalBtn"></button>
+                </div>
+                </div>
+                <div class="modal-body">
+                    <div id="taskId" data-id=""></div>
+                    <div class="p-1">
+                        <form id="taskForm">
+                            <input type="hidden" id="tarefaId">
+
+                            <div class="mb-2">
+                                <label for="descriptionmodal" class="form-label fw-semibold">Descrição</label>
+                                <input type="text" class="form-control" id="descriptionmodal" name="descriptionmodal" required>
+                            </div>
+
+							<div class="mb-2">
+                                <label for="prioridademodal" class="form-label fw-semibold">É
+                                    prioridade?</label>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="formSwitch1"> 
+                                    <label class="form-check-label" for="formSwitch1" id="switchLabel1">Não</label>
+                                </div>
+                            </div>
+                            
+							<div id="sandbox-container" class="mb-2">
+								<label for="deadlinemodal" class="form-label fw-semibold mb-2">Prazo</label>
+								<div class="input-group date" id="datepickerContainer">
+									<input type="text" class="form-control" id="deadlinemodal" />
+									<span class="input-group-addon	"> </span>
+								</div>
+								<div class="invalid-feedback " id="deadlineError" >A data precisa ser hoje ou uma data futura.</div>				
+							</div>
+
+							<div class="mb-2">
+                                <label for="tempoEstimadomodal" class="form-label fw-semibold">Tempo
+                                    Estimado</label> <select id="estimated_time" name="estimated_time"
+                                    class="form-select" required>
+                                    <!-- Opções -->
+                                </select>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="subjectmodal" class="form-label fw-semibold">Assunto</label> 
+                                <input type="text" class="form-control" id="subjectmodal" name="subjectmodal">
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="delegatedmodal" class="form-label fw-semibold">Pode ser
+                                    delegado?</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="formSwitch2"> 
+                                    <label class="form-check-label" for="formSwitch2" id="switchLabel2">Não</label>
+                                </div>
+                            </div>                          
+                            
+                             <div class="mb-2">
+                                <label for="contextmodal" class="form-label fw-semibold" >Adicione contexto</label>
+                               <select id="contexts" name="contexts" class="form-control" multiple="multiple"></select>
+                            </div>
+ 
+                            <div class="mb-2 position-relative mt-2">
+								<label for="projectdescriptionmodal" class="form-label fw-semibold">Associado ao projeto</label>
+								<div class="d-flex align-items-center">
+									<select id="getprojects" name="getprojects" class="form-select me-2">
+										<!-- Opções -->
+									</select>
+									<button type="button" class="btn btn-outline-danger btn-sm"
+										id="unlinkProjectBtn" data-bs-toggle="tooltip"
+										title="Desvincular do projeto">
+										<i class="bi bi-x-circle"></i>
+									</button>
+								</div>
+							</div>
+
+                            <div class="mb-3">
+                                <label for="categorymodal" class="form-label fw-semibold">Categoria</label>
+                                <select class="form-select" id="categorymodal" name="categorymodal" disabled>
+                                    <option value="1">Quando Puder</option>
+                                    <option value="2">Agendado</option>
+                                    <option value="3">Projeto</option>
+                                    <option value="4">Aguardando Resposta</option>
+                                    <option value="5">Arquivo</option>
+                                    <option value="6">Arquivo</option>
+                                </select>
+                            </div>
+
+							<div id="completedWarning" class="alert alert-primary d-none">
+								Esta tarefa já foi concluída! Reabra para editar.</div>
+
+							<div class="d-flex justify-content-between mt-4">
+								<button type="button" class="btn btn-outline-danger ms-2"
+									id="deleteTaskBtn" data-bs-toggle="modal"
+									data-bs-target="#deleteModal">Excluir Tarefa</button>
+
+								<div id="actionArea">
+									<button type="submit" id="saveChangesBtn"
+										class="btn btn-outline-secondary btn-modal-bg">
+										Salvar Alterações</button>
+
+									<button type="button" id="reopenTaskBtn"
+										class="btn btn-outline-primary d-none btn-modal-bg">Reabrir Tarefa</button>
+								</div>
+							</div>
+						</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<!-- Modal para edição de projeto -->
+	<div class="modal fade" id="projectModal" tabindex="-1"
+		aria-labelledby="projectModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="projectModalLabel"></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="input-group mb-4">
+						<input type="text" class="form-control" placeholder="Adicione uma nova tarefa ao projeto" id="newTask" required />
+						<button class="btn btn-dark btn-bg"  id="addTaskBtn" disabled>Adicionar</button>
+					</div>
+					<div id="projectModalBody" data-id=""></div>
+				</div>
+
+				<div class="modal-footer justify-content-between">
+					<button type="button" class="btn btn-outline-danger ms-2" id="deleteProjectBtn" data-bs-toggle="modal" data-bs-target="#deleteModal">Excluir Projeto</button>			
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal de Confirmação Delete-->
+    <div class="modal" id="deleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3"></i>
+                    <h5 class="mb-3">Tem certeza que deseja excluir <strong class="text-danger" id="taskToDeleteDesc"></strong>?</h5>
+                    <p class="text-muted">Essa ação não poderá ser desfeita.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger confirmDeleteClass" id="confirmDelete">Sim, excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<!-- Modal Feito -->
+	<div class="modal" id="doneModal" tabindex="-1"
+		aria-labelledby="doneModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body text-center p-4">
+					<i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+					<h5 class="mb-3" id="doneModalLabel">Finalizar tarefa?</h5>
+					<form id="doneModalForm">
+						<div class="d-flex justify-content-center gap-3 mt-4">
+							<button type="button" class="btn btn-outline-secondary"
+								data-bs-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn btn-success">Marcar
+								como feito</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal de Confirmação da Última Tarefa -->
+	<div class="modal" id="completeLastTaskModal" tabindex="-1"
+		aria-labelledby="completeLastTaskLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content border-0 shadow-lg rounded-4">
+				<div class="modal-body text-center p-4">
+					<i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+					<h5 class="mb-3">
+						Esta é a última tarefa do projeto <strong class="text-primary" id="projectToCompleteName"></strong>.
+					</h5>
+					<p class="text-muted">Concluir esta tarefa marcará o projeto como finalizado. Deseja continuar?</p>
+					<div class="d-flex justify-content-center gap-3 mt-4">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-success" id="confirmCompleteLastTask">Sim, concluir</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Toast alteração de categoria -->
+	<div class="toast-container position-fixed bottom-0 end-0 p-3"
+		style="z-index: 1080">
+		<div id="categoryToast"
+			class="toast align-items-center bg-light text-dark border-0 fs-6 w-auto px-4 py-3"
+			role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body" id="categoryToastBody">A tarefa foi movida com sucesso!</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+			</div>
+		</div>
+	</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" ></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" ></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+<script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="module" src="../scripts/main.js"></script>
+
+   
+</body>
+</html>
+
+
