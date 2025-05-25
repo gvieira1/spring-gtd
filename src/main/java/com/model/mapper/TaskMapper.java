@@ -6,11 +6,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.exception.ResourceNotFoundException;
-import com.model.dto.ContextDTO;
-import com.model.dto.EstimatedTimeDTO;
-import com.model.dto.SimpleCategoryDTO;
-import com.model.dto.TaskRequestDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.task.ContextDTO;
+import com.model.dto.task.EstimatedTimeDTO;
+import com.model.dto.task.SimpleCategoryDTO;
+import com.model.dto.task.TaskRequestDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.Context;
 import com.model.entity.EstimatedTime;

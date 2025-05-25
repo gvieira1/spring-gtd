@@ -221,7 +221,7 @@
 									<select id="getprojects" name="getprojects" class="form-select me-2">
 										<!-- Opções -->
 									</select>
-									<button type="button" class="btn btn-outline-danger btn-sm"
+									<button type="button" class="btn btn-outline-danger btn-sm unlinkProjectBtn"
 										id="unlinkProjectBtn" data-bs-toggle="tooltip"
 										title="Desvincular do projeto">
 										<i class="bi bi-x-circle"></i>
@@ -231,7 +231,7 @@
 
                             <div class="mb-3">
                                 <label for="categorymodal" class="form-label fw-semibold">Categoria</label>
-                                <select class="form-select" id="categorymodal" name="categorymodal" disabled>
+                                <select class="form-select" id="categorymodal" name="categorymodal" tabindex="-1" disabled>
                                     <option value="1">Quando Puder</option>
                                     <option value="2">Agendado</option>
                                     <option value="3">Projeto</option>

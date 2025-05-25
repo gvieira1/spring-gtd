@@ -29,10 +29,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.config.TestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.model.dto.GroupedTasksResponseDTO;
-import com.model.dto.TaskRequestDTO;
-import com.model.dto.TaskResponseDTO;
 import com.model.dto.WeeklyReportDTO;
+import com.model.dto.task.GroupedTasksResponseDTO;
+import com.model.dto.task.TaskRequestDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.User;
 import com.model.service.TaskService;
 import com.model.service.UserService;

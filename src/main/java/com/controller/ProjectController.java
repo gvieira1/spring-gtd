@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.dto.ProjectRequestDTO;
-import com.model.dto.ProjectResponseDTO;
-import com.model.dto.TaskRequestDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.project.ProjectRequestDTO;
+import com.model.dto.project.ProjectResponseDTO;
+import com.model.dto.task.TaskRequestDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.service.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;

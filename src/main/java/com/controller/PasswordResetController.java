@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.dto.ForgotPasswordRequestDTO;
-import com.model.dto.ResetPasswordRequestDTO;
+import com.model.dto.auth.ForgotPasswordRequestDTO;
+import com.model.dto.auth.ResetPasswordRequestDTO;
 import com.model.service.PasswordResetService;
 
 import io.swagger.v3.oas.annotations.Operation;

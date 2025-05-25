@@ -12,10 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
-import com.model.dto.ProjectRequestDTO;
-import com.model.dto.ProjectResponseDTO;
-import com.model.dto.TaskRequestDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.project.ProjectRequestDTO;
+import com.model.dto.project.ProjectResponseDTO;
+import com.model.dto.task.TaskRequestDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.EstimatedTime;
 import com.model.entity.Project;

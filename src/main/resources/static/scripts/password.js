@@ -1,34 +1,49 @@
-$(document).ready(function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    $("#token").val(urlParams.get('token'));
+
+$(document).ready(function () {
+	initializeTokenFromURL();
+	bindPasswordFormEvents();
 });
 
-  $('#savePasswordBtn').on('click', function (e) {
-    const password = $('#newPassword').val();
-    const confirmPassword = $('#newPasswordConfirm').val();
+function initializeTokenFromURL() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const token = urlParams.get('token');
+	$("#token").val(token);
+}
 
-    if (password !== confirmPassword) {
-      e.preventDefault(); 
-      $('#error-message').html('<div class="alert alert-danger text-dark">Use a mesma senha nos dois campos</div>');
-    }
-  });
+function bindPasswordFormEvents() {
+	$('#savePasswordBtn').on('click', validatePasswordMatch);
+	$('#resetPasswordForm').on('submit', handlePasswordReset);
+}
 
+function validatePasswordMatch(e) {
+	const password = $('#newPassword').val();
+	const confirmPassword = $('#newPasswordConfirm').val();
 
-$('#resetPasswordForm').submit(function(e) {
-    e.preventDefault();
-    $.ajax({
-        type: "POST",
-        url: "/api/password/reset",
-        contentType: "application/json",
-        data: JSON.stringify({
-            token: $("#token").val(),
-            newPassword: $("#newPassword").val()
-        }),
-        success: function() {
-            window.location.href = "/";
-        },
-        error: function() {
-           $('#error-message').html('<div class="alert alert-danger text-dark">Token inválido fornecido</div>');
-        }
-    });
-});
+	if (password !== confirmPassword) {
+		e.preventDefault();
+		showMessage('danger', 'Use a mesma senha nos dois campos');
+	}
+}
+
+function handlePasswordReset(e) {
+	e.preventDefault();
+	const token = $('#token').val();
+	const newPassword = $('#newPassword').val();
+
+	$.ajax({
+		type: "POST",
+		url: "/api/password/reset",
+		contentType: "application/json",
+		data: JSON.stringify({ token, newPassword }),
+		success: function () {
+			window.location.href = "/";
+		},
+		error: function () {
+			showMessage('danger', 'Token inválido fornecido');
+		}
+	});
+}
+
+function showMessage(type, text) {
+	$('#error-message').html(`<div class="alert alert-${type} text-dark">${text}</div>`);
+}

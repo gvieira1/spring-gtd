@@ -1,4 +1,4 @@
-package com.model.dto;
+package com.model.dto.task;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

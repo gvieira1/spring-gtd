@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.model.dto.CalendarEventDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.task.TaskResponseDTO;
 
 @Service
 public class CalendarService {

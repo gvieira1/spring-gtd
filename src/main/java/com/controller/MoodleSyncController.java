@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.User;
 import com.model.service.MoodleService;
 import com.model.service.UserService;

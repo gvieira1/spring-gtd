@@ -16,10 +16,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.model.dto.ActivityStatusDTO;
-import com.model.dto.CompletionStatusResponse;
-import com.model.dto.CourseDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.moodle.ActivityStatusDTO;
+import com.model.dto.moodle.CompletionStatusResponse;
+import com.model.dto.moodle.CourseDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.Task;
 import com.model.entity.User;
 import com.model.mapper.TaskMapper;

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.model.dto.AuthenticationDTO;
-import com.model.dto.RegisterDTO;
+import com.model.dto.auth.AuthenticationDTO;
+import com.model.dto.auth.RegisterDTO;
 import com.model.entity.User;
 import com.model.service.TokenService;
 import com.model.service.UserService;

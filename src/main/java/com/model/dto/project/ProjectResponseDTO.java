@@ -1,6 +1,9 @@
-package com.model.dto;
+package com.model.dto.project;
 
 import java.util.List;
+
+import com.model.dto.task.SimpleUserDTO;
+import com.model.dto.task.TaskSummaryDTO;
 
 import lombok.Data;
 

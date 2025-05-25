@@ -13,12 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exception.ResourceNotFoundException;
-import com.model.dto.ActivityStatusDTO;
-import com.model.dto.CourseDTO;
-import com.model.dto.GroupedTasksResponseDTO;
-import com.model.dto.TaskRequestDTO;
-import com.model.dto.TaskResponseDTO;
 import com.model.dto.WeeklyReportDTO;
+import com.model.dto.moodle.ActivityStatusDTO;
+import com.model.dto.moodle.CourseDTO;
+import com.model.dto.task.GroupedTasksResponseDTO;
+import com.model.dto.task.TaskRequestDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.entity.CategoryEntity;
 import com.model.entity.Context;
 import com.model.entity.EstimatedTime;

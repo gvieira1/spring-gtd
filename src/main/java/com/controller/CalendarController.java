@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.model.dto.CalendarEventDTO;
-import com.model.dto.TaskResponseDTO;
+import com.model.dto.task.TaskResponseDTO;
 import com.model.service.CalendarService;
 import com.model.service.TaskService;
 

@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.exception.UserNotFoundException;
 import com.model.dto.NotificationPreferenceDTO;
-import com.model.dto.RegisterDTO;
+import com.model.dto.auth.RegisterDTO;
 import com.model.entity.User;
 import com.repository.UserRepository;
 

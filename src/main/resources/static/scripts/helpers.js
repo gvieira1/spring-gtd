@@ -83,6 +83,24 @@ export function runPageTransition() {
 }
 
 
+export function validateDeadline(rawValue, errorId) {
+    $('#deadlinemodal').removeClass('is-invalid');
+    $(`#${errorId}`).addClass('d-none');
 
+    if (!rawValue) {
+        return { valid: true, value: null };
+    }
 
+    const [day, month, year] = rawValue.split('/');
+    const deadlineDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    if (isNaN(deadlineDate) || deadlineDate < today) {
+        $('#deadlinemodal').addClass('is-invalid');
+        $(`#${errorId}`).removeClass('d-none');
+        return { valid: false };
+    }
+
+    return { valid: true, value: formatDateToIso(rawValue) };
+}
