@@ -56,6 +56,7 @@ public class UserService {
 	
 	public User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth == null || !(auth.getPrincipal() instanceof User user)) {
         	throw new UserNotFoundException("Usuário não encontrado!");
         }

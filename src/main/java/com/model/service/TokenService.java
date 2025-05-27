@@ -3,46 +3,39 @@ package com.model.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 
 import com.model.entity.User;
 
 @Service
 public class TokenService {
 
-    @Value("${api.security.token.secret}")
-    private String secret;
+    
+    private final JwtEncoder encoder;
+    
+    public TokenService(JwtEncoder encoder) {
+        this.encoder = encoder;
+    }
 
     public String generateToken(User user) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.create()
-                .withIssuer("spring-gtd")
-                .withSubject(user.getId().toString())
-                .withExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
-                .sign(algorithm);
-        } catch (JWTCreationException e) {
-            throw new RuntimeException("Erro na criação do token", e);
-        }
+        Instant now = Instant.now();
+        Instant expiry = now.plus(1, ChronoUnit.HOURS);
 
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("spring-gtd")
+                .issuedAt(now)
+                .expiresAt(expiry)
+                .subject(user.getId().toString())
+                .build();
+
+        JwsHeader headers = JwsHeader.with(() -> "HS256").build(); 
+        return encoder.encode(JwtEncoderParameters.from(headers, claims)).getTokenValue();
+    
     }
 
-    public String validateToken(String token) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
-                .withIssuer("spring-gtd")
-                .build()
-                .verify(token)
-                .getSubject(); 
-        } catch (JWTVerificationException e) {
-            return null; 
-        }
-    }
+
 }

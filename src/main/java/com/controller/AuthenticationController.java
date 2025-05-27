@@ -58,7 +58,7 @@ public class AuthenticationController {
         cookie.setMaxAge(2 * 60 * 60); 
         response.addCookie(cookie);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Login successful");
     }
 
     @Operation(summary = "Register a new user", description = "Registers a new user by collecting the username, email, and password")
