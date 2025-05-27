@@ -3,7 +3,7 @@ import { renderTasks } from './service/taskRenderer.js';
 
 function fetchTasksByCategory(category = null) {
 	const queryParam = category ? `?category=${encodeURIComponent(category)}` : '';
-	const url = `/api/tasks${queryParam}`;
+	const url = `/api/tasks${queryParam}&size=1000`;
 	return $.ajax({
 		url: url,
 		method: 'GET',
