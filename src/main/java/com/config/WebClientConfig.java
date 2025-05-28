@@ -1,5 +1,6 @@
 package com.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,9 @@ import java.time.Duration;
 @Configuration
 public class WebClientConfig {
 
+	@Value("${moodle.api.url}")
+	private String moodleApiUrl;
+	
     @Bean
     WebClient moodleWebClient() {
     	HttpClient httpClient = HttpClient.create()
@@ -19,7 +23,7 @@ public class WebClientConfig {
                 .responseTimeout(Duration.ofSeconds(10));
 		
         return WebClient.builder()
-                .baseUrl("http://localhost:8000/webservice/rest/server.php")
+                .baseUrl(moodleApiUrl)
 	            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	            .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
