@@ -43,7 +43,7 @@ Este é um aplicativo de organização voltado para estudantes, baseado na metod
 
 ---
 
-### 📄 [Relatório Técnico completo](docs/Relatorio_Tecnico_ADS_IFSP)
+### 📄 [Relatório Técnico Completo](docs/Relatorio_Tecnico_ADS_IFSP.pdf)
 
 ---
 
